@@ -26,6 +26,8 @@ type
     IsCounted: Boolean;
   end;
 
+  TAssignmentExerciseArray = array of TAssignmentExercise;
+
 implementation
 
 end.

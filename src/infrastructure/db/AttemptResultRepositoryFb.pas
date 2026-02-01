@@ -18,6 +18,7 @@ type
   public
     constructor Create(const Connection: TSQLConnection; const Transaction: TSQLTransaction);
     function GetById(const Id: Int64; out ResultRec: TAttemptResult): Boolean;
+    function ListByAssignmentExerciseId(const AssignmentExerciseId: Int64): TAttemptResultArray;
     function Insert(const ResultRec: TAttemptResult): Int64;
     procedure Update(const ResultRec: TAttemptResult);
   end;
@@ -75,6 +76,52 @@ begin
       begin
         ResultRec := MapResult(Query);
         Result := True;
+      end;
+      Query.Close;
+      if StartedHere then
+        FTransaction.Commit;
+    except
+      on E: Exception do
+      begin
+        if StartedHere and FTransaction.Active then
+          FTransaction.Rollback;
+        raise;
+      end;
+    end;
+  finally
+    Query.Free;
+  end;
+end;
+
+function TAttemptResultRepositoryFb.ListByAssignmentExerciseId(
+  const AssignmentExerciseId: Int64): TAttemptResultArray;
+var
+  Query: TSQLQuery;
+  StartedHere: Boolean;
+  Item: TAttemptResult;
+  Count: Integer;
+begin
+  EnsureConnection;
+  StartedHere := not FTransaction.Active;
+  if StartedHere then
+    FTransaction.StartTransaction;
+  Query := TSQLQuery.Create(nil);
+  try
+    try
+      Query.DataBase := FConnection;
+      Query.Transaction := FTransaction;
+      Query.SQL.Text := 'select * from attempt_results where assignment_exercise_id = :id order by attempt_no';
+      Query.ParamByName('id').AsLargeInt := AssignmentExerciseId;
+      Query.Open;
+      Count := 0;
+      SetLength(Result, 0);
+      while not Query.EOF do
+      begin
+        Item := MapResult(Query);
+        Inc(Count);
+        SetLength(Result, Count);
+        Result[Count - 1] := Item;
+        Query.Next;
       end;
       Query.Close;
       if StartedHere then

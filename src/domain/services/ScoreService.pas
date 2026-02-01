@@ -20,10 +20,12 @@ type
 function CalcFinalResult(const Thresholds: TThresholds; const Sex: Char; const AgeGroup: Integer;
   const Category: Integer; const NRequired: Integer; const Points: array of Integer;
   const ExcusedPolicy: TExcusedStatusPolicy; const ParticipationStatus: string): TFinalResult;
+function TryFindThreshold(const Thresholds: TThresholds; const Sex: Char; const AgeGroup: Integer;
+  const Category: Integer; const NRequired: Integer; out Row: TThresholdRow): Boolean;
 
 implementation
 
-function FindThreshold(const Thresholds: TThresholds; const Sex: Char; const AgeGroup: Integer;
+function TryFindThreshold(const Thresholds: TThresholds; const Sex: Char; const AgeGroup: Integer;
   const Category: Integer; const NRequired: Integer; out Row: TThresholdRow): Boolean;
 var
   i: Integer;
@@ -106,7 +108,7 @@ begin
     Exit;
   end;
 
-  if not FindThreshold(Thresholds, Sex, AgeGroup, Category, NRequired, Row) then
+  if not TryFindThreshold(Thresholds, Sex, AgeGroup, Category, NRequired, Row) then
     raise EScoreError.Create('NORM_THRESHOLD_NOT_FOUND');
 
   for i := 0 to NRequired - 1 do

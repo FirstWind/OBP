@@ -18,6 +18,7 @@ type
   public
     constructor Create(const Connection: TSQLConnection; const Transaction: TSQLTransaction);
     function GetById(const Id: Int64; out Assignment: TSessionAssignment): Boolean;
+    function GetByParticipantId(const ParticipantId: Int64; out Assignment: TSessionAssignment): Boolean;
     function Insert(const Assignment: TSessionAssignment): Int64;
     procedure Update(const Assignment: TSessionAssignment);
   end;
@@ -31,6 +32,7 @@ type
   public
     constructor Create(const Connection: TSQLConnection; const Transaction: TSQLTransaction);
     function GetById(const Id: Int64; out Exercise: TAssignmentExercise): Boolean;
+    function ListByAssignmentId(const AssignmentId: Int64): TAssignmentExerciseArray;
     function Insert(const Exercise: TAssignmentExercise): Int64;
     procedure Update(const Exercise: TAssignmentExercise);
   end;
@@ -76,6 +78,46 @@ begin
       Query.Transaction := FTransaction;
       Query.SQL.Text := 'select * from session_assignments where id = :id';
       Query.ParamByName('id').AsLargeInt := Id;
+      Query.Open;
+      if not Query.EOF then
+      begin
+        Assignment := MapAssignment(Query);
+        Result := True;
+      end;
+      Query.Close;
+      if StartedHere then
+        FTransaction.Commit;
+    except
+      on E: Exception do
+      begin
+        if StartedHere and FTransaction.Active then
+          FTransaction.Rollback;
+        raise;
+      end;
+    end;
+  finally
+    Query.Free;
+  end;
+end;
+
+function TSessionAssignmentRepositoryFb.GetByParticipantId(const ParticipantId: Int64;
+  out Assignment: TSessionAssignment): Boolean;
+var
+  Query: TSQLQuery;
+  StartedHere: Boolean;
+begin
+  Result := False;
+  EnsureConnection;
+  StartedHere := not FTransaction.Active;
+  if StartedHere then
+    FTransaction.StartTransaction;
+  Query := TSQLQuery.Create(nil);
+  try
+    try
+      Query.DataBase := FConnection;
+      Query.Transaction := FTransaction;
+      Query.SQL.Text := 'select * from session_assignments where session_participant_id = :id';
+      Query.ParamByName('id').AsLargeInt := ParticipantId;
       Query.Open;
       if not Query.EOF then
       begin
@@ -226,6 +268,52 @@ begin
       begin
         Exercise := MapExercise(Query);
         Result := True;
+      end;
+      Query.Close;
+      if StartedHere then
+        FTransaction.Commit;
+    except
+      on E: Exception do
+      begin
+        if StartedHere and FTransaction.Active then
+          FTransaction.Rollback;
+        raise;
+      end;
+    end;
+  finally
+    Query.Free;
+  end;
+end;
+
+function TAssignmentExerciseRepositoryFb.ListByAssignmentId(const AssignmentId: Int64): TAssignmentExerciseArray;
+var
+  Query: TSQLQuery;
+  StartedHere: Boolean;
+  Item: TAssignmentExercise;
+  Count: Integer;
+begin
+  EnsureConnection;
+  StartedHere := not FTransaction.Active;
+  if StartedHere then
+    FTransaction.StartTransaction;
+  Query := TSQLQuery.Create(nil);
+  try
+    try
+      Query.DataBase := FConnection;
+      Query.Transaction := FTransaction;
+      Query.SQL.Text := 'select * from assignment_exercises where session_assignment_id = :id ' +
+        'order by sort_order, id';
+      Query.ParamByName('id').AsLargeInt := AssignmentId;
+      Query.Open;
+      Count := 0;
+      SetLength(Result, 0);
+      while not Query.EOF do
+      begin
+        Item := MapExercise(Query);
+        Inc(Count);
+        SetLength(Result, Count);
+        Result[Count - 1] := Item;
+        Query.Next;
       end;
       Query.Close;
       if StartedHere then

@@ -44,7 +44,8 @@ $tests = @(
   "src/tests/TestSessionRepositoriesCompile.pas",
   "src/tests/TestDbContextCompile.pas",
   "src/tests/TestPersonServiceCompile.pas",
-  "src/tests/TestSessionServiceCompile.pas"
+  "src/tests/TestSessionServiceCompile.pas",
+  "src/tests/TestSessionEvaluationServiceCompile.pas"
 )
 
 foreach ($t in $tests) {

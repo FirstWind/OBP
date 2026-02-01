@@ -23,6 +23,8 @@ type
     OutOfScalePolicy: string;
   end;
 
+  TAttemptResultArray = array of TAttemptResult;
+
 implementation
 
 end.

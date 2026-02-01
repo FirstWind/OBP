@@ -18,6 +18,8 @@ type
   end;
 
 function ApplyRounding(const ResultType: string; const Value: Double; const Policy: TRoundingPolicy): Double;
+function TryCalcPointsForResult(const Scale: TScale; const RawValue: Double;
+  const Rounding: TRoundingPolicy; out Points: Integer; out IsOutOfScale: Boolean): Boolean;
 function CalcPointsForResult(const Scale: TScale; const RawValue: Double;
   const Rounding: TRoundingPolicy; const OutPolicy: TOutOfScalePolicy): Integer;
 
@@ -125,17 +127,40 @@ begin
   Result := Found;
 end;
 
+function TryCalcPointsForResult(const Scale: TScale; const RawValue: Double;
+  const Rounding: TRoundingPolicy; out Points: Integer; out IsOutOfScale: Boolean): Boolean;
+var
+  R: Double;
+begin
+  R := ApplyRounding(Scale.ResultType, RawValue, Rounding);
+  if MatchExact(Scale, R, Points) then
+  begin
+    IsOutOfScale := False;
+    Exit(True);
+  end;
+  if MatchRange(Scale, R, Points) then
+  begin
+    IsOutOfScale := False;
+    Exit(True);
+  end;
+  if MatchHalfInfinite(Scale, R, Points) then
+  begin
+    IsOutOfScale := False;
+    Exit(True);
+  end;
+  IsOutOfScale := True;
+  Points := 0;
+  Result := False;
+end;
+
 function CalcPointsForResult(const Scale: TScale; const RawValue: Double;
   const Rounding: TRoundingPolicy; const OutPolicy: TOutOfScalePolicy): Integer;
 var
-  R: Double;
   Points: Integer;
+  OutOfScale: Boolean;
 begin
-  R := ApplyRounding(Scale.ResultType, RawValue, Rounding);
-  if MatchExact(Scale, R, Points) then Exit(Points);
-  if MatchRange(Scale, R, Points) then Exit(Points);
-  if MatchHalfInfinite(Scale, R, Points) then Exit(Points);
-
+  if TryCalcPointsForResult(Scale, RawValue, Rounding, Points, OutOfScale) then
+    Exit(Points);
   if OutPolicy = osp_zero_points then
     Exit(0);
   raise EScaleMatchError.Create('NORM_SCALE_NO_MATCH');
