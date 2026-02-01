@@ -5,6 +5,7 @@
 *.obj
 *.res
 *.compiled
+*.a
 
 src/app/config/app.ini
 src/app/config/
