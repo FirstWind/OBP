@@ -50,7 +50,8 @@ $tests = @(
   "src/tests/TestSessionEvaluationServiceCompile.pas",
   "src/tests/TestNormsPackServiceCompile.pas",
   "src/tests/TestAssignmentServiceCompile.pas",
-  "src/tests/TestSessionSetupServiceCompile.pas"
+  "src/tests/TestSessionSetupServiceCompile.pas",
+  "src/tests/TestParticipantSetupServiceCompile.pas"
 )
 
 foreach ($t in $tests) {
