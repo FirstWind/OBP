@@ -1,0 +1,14 @@
+{
+  "case_id": "ex1_m_g1",
+  "sex": "M",
+  "age_group": 1,
+  "category": 1,
+  "n_required": 3,
+  "results": [
+    { "exercise_id": 1, "raw": "25", "normalized_value": 25, "expected_points": 100 },
+    { "exercise_id": 1, "raw": "25", "normalized_value": 25, "expected_points": 100 },
+    { "exercise_id": 1, "raw": "25", "normalized_value": 25, "expected_points": 100 }
+  ],
+  "expected_total": 300,
+  "expected_grade": "excellent"
+}
