@@ -15,6 +15,10 @@ $fu = @(
   "-Fusrc/domain/policies",
   "-Fusrc/domain/value_objects",
   "-Fusrc/norms",
+  "-Fusrc/infrastructure/config",
+  "-Fusrc/infrastructure/db",
+  "-Fusrc/audit",
+  "-Fusrc/locks",
   "-Fusrc/tests"
 )
 
@@ -33,7 +37,8 @@ $tests = @(
   "src/tests/TestResultNormalizer.pas",
   "src/tests/TestPolicyDefaults.pas",
   "src/tests/TestParticipationStatusService.pas",
-  "src/tests/TestCategoryPolicyService.pas"
+  "src/tests/TestCategoryPolicyService.pas",
+  "src/tests/TestInfrastructureCompile.pas"
 )
 
 foreach ($t in $tests) {

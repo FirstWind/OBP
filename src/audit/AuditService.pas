@@ -62,31 +62,33 @@ begin
     Transaction.StartTransaction;
   Query := TSQLQuery.Create(nil);
   try
-    Query.DataBase := Connection;
-    Query.Transaction := Transaction;
-    Query.SQL.Text :=
-      'insert into audit_log (user_name, entity_type, entity_id, action, data_json) ' +
-      'values (:user_name, :entity_type, :entity_id, :action, :data_json)';
-    Query.ParamByName('user_name').AsString := FActorId;
-    Query.ParamByName('entity_type').AsString := RecordData.EntityType;
-    if RecordData.HasEntityId then
-      Query.ParamByName('entity_id').AsLargeInt := RecordData.EntityId
-    else
-      Query.ParamByName('entity_id').Clear;
-    Query.ParamByName('action').AsString := RecordData.Action;
-    if RecordData.DataJson <> '' then
-      Query.ParamByName('data_json').AsString := RecordData.DataJson
-    else
-      Query.ParamByName('data_json').Clear;
-    Query.ExecSQL;
-    if StartedHere then
-      Transaction.Commit;
-  except
-    on E: Exception do
-    begin
-      if StartedHere and Transaction.Active then
-        Transaction.Rollback;
-      raise;
+    try
+      Query.DataBase := Connection;
+      Query.Transaction := Transaction;
+      Query.SQL.Text :=
+        'insert into audit_log (user_name, entity_type, entity_id, action, data_json) ' +
+        'values (:user_name, :entity_type, :entity_id, :action, :data_json)';
+      Query.ParamByName('user_name').AsString := FActorId;
+      Query.ParamByName('entity_type').AsString := RecordData.EntityType;
+      if RecordData.HasEntityId then
+        Query.ParamByName('entity_id').AsLargeInt := RecordData.EntityId
+      else
+        Query.ParamByName('entity_id').Clear;
+      Query.ParamByName('action').AsString := RecordData.Action;
+      if RecordData.DataJson <> '' then
+        Query.ParamByName('data_json').AsString := RecordData.DataJson
+      else
+        Query.ParamByName('data_json').Clear;
+      Query.ExecSQL;
+      if StartedHere then
+        Transaction.Commit;
+    except
+      on E: Exception do
+      begin
+        if StartedHere and Transaction.Active then
+          Transaction.Rollback;
+        raise;
+      end;
     end;
   finally
     Query.Free;
