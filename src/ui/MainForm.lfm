@@ -129,10 +129,71 @@ object MainForm: TMainForm
       end
       object TabResults: TTabSheet
         Caption = 'Результаты'
-        object LabelResultsHint: TLabel
-          Left = 16
-          Top = 16
-          Caption = 'Экран в разработке'
+        object PanelResultsTop: TPanel
+          Align = alTop
+          Height = 120
+          TabOrder = 0
+          object BtnLoadNorms: TButton
+            Left = 8
+            Top = 8
+            Width = 180
+            Caption = 'Загрузить Norms Pack'
+            OnClick = BtnLoadNormsClick
+            TabOrder = 0
+          end
+          object LblNormsInfo: TLabel
+            Left = 200
+            Top = 12
+            Caption = 'Norms Pack не загружен'
+          end
+          object LabelEvalParticipant: TLabel
+            Left = 8
+            Top = 44
+            Caption = 'ID участника:'
+          end
+          object EditEvalParticipantId: TEdit
+            Left = 100
+            Top = 40
+            Width = 120
+            TabOrder = 1
+          end
+          object BtnLoadParticipantExercises: TButton
+            Left = 240
+            Top = 38
+            Width = 200
+            Caption = 'Загрузить упражнения'
+            OnClick = BtnLoadParticipantExercisesClick
+            TabOrder = 2
+          end
+          object BtnSaveAttempts: TButton
+            Left = 460
+            Top = 38
+            Width = 160
+            Caption = 'Сохранить результаты'
+            OnClick = BtnSaveAttemptsClick
+            TabOrder = 3
+          end
+          object BtnEvaluate: TButton
+            Left = 640
+            Top = 38
+            Width = 160
+            Caption = 'Рассчитать итог'
+            OnClick = BtnEvaluateClick
+            TabOrder = 4
+          end
+          object LblEvalResult: TLabel
+            Left = 8
+            Top = 76
+            Caption = 'Итог: нет'
+          end
+        end
+        object GridAttempts: TStringGrid
+          Align = alClient
+          ColCount = 5
+          FixedCols = 0
+          RowCount = 2
+          Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goEditing]
+          TabOrder = 1
         end
       end
       object TabImport: TTabSheet
