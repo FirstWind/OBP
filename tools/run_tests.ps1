@@ -31,7 +31,8 @@ $tests = @(
   "src/tests/TestExerciseGradeIntegration.pas",
   "src/tests/TestGoldenRunner.pas",
   "src/tests/TestResultNormalizer.pas",
-  "src/tests/TestPolicyDefaults.pas"
+  "src/tests/TestPolicyDefaults.pas",
+  "src/tests/TestParticipationStatusService.pas"
 )
 
 foreach ($t in $tests) {
