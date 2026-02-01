@@ -45,7 +45,7 @@
   <CompilerOptions>
     <Version Value="11"/>
     <SearchPaths>
-      <OtherUnitFiles Value="..\ui;..\infrastructure\config;..\infrastructure\db"/>
+      <OtherUnitFiles Value="..\ui;..\infrastructure\config;..\infrastructure\db;..\domain\entities;..\domain\services;..\domain\policies;..\domain\value_objects;..\services;..\norms;..\audit;..\locks;..\infrastructure\crypto"/>
       <IncludeFiles Value="$(ProjOutDir)"/>
     </SearchPaths>
     <Linking>
