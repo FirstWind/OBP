@@ -19,6 +19,7 @@ $fu = @(
   "-Fusrc/infrastructure/db",
   "-Fusrc/audit",
   "-Fusrc/locks",
+  "-Fusrc/services",
   "-Fusrc/tests"
 )
 
@@ -41,7 +42,8 @@ $tests = @(
   "src/tests/TestInfrastructureCompile.pas",
   "src/tests/TestRepositoriesCompile.pas",
   "src/tests/TestSessionRepositoriesCompile.pas",
-  "src/tests/TestDbContextCompile.pas"
+  "src/tests/TestDbContextCompile.pas",
+  "src/tests/TestPersonServiceCompile.pas"
 )
 
 foreach ($t in $tests) {
