@@ -6,7 +6,7 @@ interface
 
 uses
   SysUtils, DbContext, AuditService,
-  SessionAssignmentEntity, AttemptResultEntity;
+  SessionAssignmentEntity, AttemptResultEntity, Exercises;
 
 type
   TAssignmentService = class
@@ -18,11 +18,17 @@ type
     constructor Create(const Db: TDbContext; const Audit: TAuditService);
     function CreateAssignmentWithExercises(var Assignment: TSessionAssignment;
       const Exercises: array of TAssignmentExercise): Int64;
+    function CreatePlannedAssignment(const ParticipantId: Int64; const Catalog: TExercises;
+      const SelectedExercises: TAssignmentExerciseArray; const CustomOrder: Boolean;
+      const CustomReason: string): Int64;
     function AddAttemptResult(var Attempt: TAttemptResult): Int64;
     procedure UpdateAttemptResult(const Attempt: TAttemptResult);
   end;
 
 implementation
+
+uses
+  SessionParticipantEntity, AssignmentPlanner, NRequiredService;
 
 constructor TAssignmentService.Create(const Db: TDbContext; const Audit: TAuditService);
 begin
@@ -65,6 +71,38 @@ begin
       raise;
     end;
   end;
+end;
+
+function TAssignmentService.CreatePlannedAssignment(const ParticipantId: Int64; const Catalog: TExercises;
+  const SelectedExercises: TAssignmentExerciseArray; const CustomOrder: Boolean;
+  const CustomReason: string): Int64;
+var
+  Participant: TSessionParticipant;
+  Assignment: TSessionAssignment;
+  Planned: TAssignmentExerciseArray;
+begin
+  if not FDb.Participants.GetById(ParticipantId, Participant) then
+    raise Exception.Create('PARTICIPANT_NOT_FOUND');
+
+  Assignment.Id := 0;
+  Assignment.SessionParticipantId := ParticipantId;
+  Assignment.NRequired := CalcNRequired(Participant.SexSnapshot, Participant.CategoryFpAssigned,
+    Participant.AgeGroupEffective);
+  if CustomOrder then
+  begin
+    Assignment.AssignmentMode := 'manual';
+    Assignment.AssignmentReason := CustomReason;
+  end
+  else
+  begin
+    Assignment.AssignmentMode := 'auto_suggest';
+    Assignment.AssignmentReason := '';
+  end;
+
+  Planned := BuildAssignmentExercises(Catalog, Participant.SexSnapshot, Participant.AgeGroupEffective,
+    Assignment.NRequired, SelectedExercises, CustomOrder, CustomReason);
+
+  Result := CreateAssignmentWithExercises(Assignment, Planned);
 end;
 
 function TAssignmentService.AddAttemptResult(var Attempt: TAttemptResult): Int64;

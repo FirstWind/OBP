@@ -49,6 +49,7 @@ $tests = @(
   "src/tests/TestSessionServiceCompile.pas",
   "src/tests/TestSessionEvaluationServiceCompile.pas",
   "src/tests/TestNormsPackServiceCompile.pas",
+  "src/tests/TestAssignmentPlanner.pas",
   "src/tests/TestAssignmentServiceCompile.pas",
   "src/tests/TestSessionSetupServiceCompile.pas",
   "src/tests/TestParticipantSetupServiceCompile.pas"
