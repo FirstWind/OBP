@@ -76,12 +76,18 @@ docs/norms/rfp2015_v1/
   appendix11.json
   appendix12.json
   appendix13.json
-  schemas/
+  schemas/  (локальные копии)
     manifest.schema.json
     appendix10.schema.json
     appendix11.schema.json
     appendix12.schema.json
     appendix13.schema.json
+```
+
+Официальные JSON‑схемы лежат в:
+
+```
+docs/norms/schemas/*.schema.json
 ```
 
 ## A1. manifest.json

@@ -1,0 +1,12 @@
+{
+  "thresholds": [
+    {
+      "sex": "M",
+      "age_group": 1,
+      "category": 1,
+      "n_required": 3,
+      "min_points_per_exercise": 10,
+      "grades": { "excellent": 250, "good": 200, "satisfactory": 150 }
+    }
+  ]
+}

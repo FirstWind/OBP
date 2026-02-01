@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/appendix13.schema.json",
+  "type": "object",
+  "required": ["points_to_grade"],
+  "additionalProperties": false,
+  "properties": {
+    "points_to_grade": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "$ref": "#/$defs/row" }
+    }
+  },
+  "$defs": {
+    "row": {
+      "type": "object",
+      "required": ["min_points", "grade"],
+      "additionalProperties": false,
+      "properties": {
+        "min_points": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "grade": { "type": "string", "enum": ["unsatisfactory", "satisfactory", "good", "excellent"] }
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "scales": [
+    {
+      "scale_id": "ex1_M_1_base",
+      "exercise_id": 1,
+      "sex": "M",
+      "age_group": 1,
+      "variant": "base",
+      "result_type": "reps",
+      "unit": "reps",
+      "better_is": "higher",
+      "rows": [
+        { "result_gte": 10, "points": 50 },
+        { "result_gte": 20, "points": 100 }
+      ]
+    }
+  ],
+  "adjustments": {
+    "rules": [],
+    "max_adjustments_per_result": 2
+  }
+}

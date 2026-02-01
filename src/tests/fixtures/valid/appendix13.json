@@ -1,0 +1,6 @@
+{
+  "points_to_grade": [
+    { "min_points": 0, "grade": "unsatisfactory" },
+    { "min_points": 50, "grade": "satisfactory" }
+  ]
+}

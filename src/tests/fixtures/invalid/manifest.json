@@ -1,0 +1,17 @@
+{
+  "norms_id": "RFP2015",
+  "title": "",
+  "source": {
+    "document_name": "315 полный.pdf",
+    "document_fingerprint": "sha256:bad"
+  },
+  "created_at": "bad-date",
+  "version": "1.0",
+  "compatible_app_versions": [],
+  "files": {
+    "appendix10": "a10.json",
+    "appendix11": "appendix11.json",
+    "appendix12": "appendix12.json",
+    "appendix13": "appendix13.json"
+  }
+}

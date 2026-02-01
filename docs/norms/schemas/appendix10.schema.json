@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/appendix10.schema.json",
+  "type": "object",
+  "required": ["exercises", "metadata"],
+  "additionalProperties": false,
+  "properties": {
+    "exercises": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/exercise" }
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["age_groups"],
+      "additionalProperties": false,
+      "properties": {
+        "age_groups": {
+          "type": "object",
+          "required": ["M", "F"],
+          "additionalProperties": false,
+          "properties": {
+            "M": { "type": "array", "items": { "type": "integer", "minimum": 1, "maximum": 8 }, "minItems": 1 },
+            "F": { "type": "array", "items": { "type": "integer", "minimum": 1, "maximum": 6 }, "minItems": 1 }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "exercise": {
+      "type": "object",
+      "required": ["exercise_id", "name", "section", "result_type", "unit", "is_group", "attempt_policy", "allowed"],
+      "additionalProperties": false,
+      "properties": {
+        "exercise_id": { "type": "integer", "minimum": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "section": {
+          "type": "string",
+          "enum": [
+            "lovkost",
+            "bystrota",
+            "sila",
+            "rukopashnyi_boi",
+            "vynoslivost",
+            "preodolenie_prepyatstvii",
+            "plavanie",
+            "podrazdelenie",
+            "special"
+          ]
+        },
+        "result_type": { "type": "string", "enum": ["time", "reps", "distance", "score", "mixed"] },
+        "unit": { "type": "string", "minLength": 1 },
+        "is_group": { "type": "boolean" },
+        "attempt_policy": { "type": "string", "enum": ["single", "two_if_fall"] },
+        "allowed": { "$ref": "#/$defs/allowedMatrix" }
+      }
+    },
+    "allowedMatrix": {
+      "type": "object",
+      "required": ["M", "F"],
+      "additionalProperties": false,
+      "properties": {
+        "M": { "$ref": "#/$defs/ageMapM" },
+        "F": { "$ref": "#/$defs/ageMapF" }
+      }
+    },
+    "ageMapM": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["1", "2", "3", "4", "5", "6", "7", "8"],
+      "properties": {
+        "1": { "type": "boolean" },
+        "2": { "type": "boolean" },
+        "3": { "type": "boolean" },
+        "4": { "type": "boolean" },
+        "5": { "type": "boolean" },
+        "6": { "type": "boolean" },
+        "7": { "type": "boolean" },
+        "8": { "type": "boolean" }
+      }
+    },
+    "ageMapF": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["1", "2", "3", "4", "5", "6"],
+      "properties": {
+        "1": { "type": "boolean" },
+        "2": { "type": "boolean" },
+        "3": { "type": "boolean" },
+        "4": { "type": "boolean" },
+        "5": { "type": "boolean" },
+        "6": { "type": "boolean" }
+      }
+    }
+  }
+}
