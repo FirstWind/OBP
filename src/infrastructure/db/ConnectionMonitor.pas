@@ -30,6 +30,7 @@ type
     FUserName: string;
     FPassword: string;
     FWasConnected: Boolean;
+    FHasNotifiedLost: Boolean;
     FOnConnectionLost: TNotifyEvent;
     FOnConnectionRestored: TNotifyEvent;
     procedure DoPing;
@@ -85,6 +86,7 @@ begin
   FConnection.Password := FPassword;
 
   FWasConnected := False;
+  FHasNotifiedLost := False;
 end;
 
 destructor TConnectionMonitor.Destroy;
@@ -143,6 +145,7 @@ begin
     if not FWasConnected then
     begin
       FWasConnected := True;
+      FHasNotifiedLost := False;
       TThread.Queue(nil, @NotifyRestored);
     end;
   except
@@ -155,6 +158,11 @@ begin
       if FWasConnected then
       begin
         FWasConnected := False;
+        TThread.Queue(nil, @NotifyLost);
+      end;
+      if not FWasConnected and not FHasNotifiedLost then
+      begin
+        FHasNotifiedLost := True;
         TThread.Queue(nil, @NotifyLost);
       end;
     end;

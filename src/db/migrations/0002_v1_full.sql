@@ -50,13 +50,15 @@ alter table test_sessions add constraint ck_test_sessions_status check (status i
 alter table test_sessions add created_by varchar(100);
 update test_sessions set created_by = 'system' where created_by is null;
 alter table test_sessions alter created_by set not null;
+alter table test_sessions add updated_at timestamp;
+alter table test_sessions add updated_by varchar(100);
 
 alter table session_participants add constraint ck_session_participants_category check (category_fp_assigned in (1,2,3));
 alter table session_participants add constraint ck_session_participants_category_src check (category_fp_source in ('auto_default','manual_override','policy_force_3'));
-alter table session_participants add constraint ck_session_participants_age_med_src check (age_group_med_source in ('manual','medical_commission'));
+alter table session_participants add constraint ck_session_participants_age_med_src check (age_group_med_source is null or age_group_med_source in ('manual','medical_commission'));
 alter table session_participants add constraint ck_session_participants_sex_snapshot check (sex_snapshot in ('M','F'));
 alter table session_participants add constraint ck_session_participants_status check (participation_status in ('completed','refuse','no_show_invalid','no_show_valid','medical_exempt','lfk'));
-alter table session_participants add constraint ck_session_participants_reason check (participation_reason_code in ('BUSINESS_TRIP','DUTY','VACATION','SICK_LEAVE','MEDICAL_EXEMPT','LFK','NO_SHOW'));
+alter table session_participants add constraint ck_session_participants_reason check (participation_reason_code is null or participation_reason_code in ('BUSINESS_TRIP','DUTY','VACATION','SICK_LEAVE','MEDICAL_EXEMPT','LFK','NO_SHOW'));
 
 alter table session_assignments add constraint ck_session_assignments_mode check (assignment_mode in ('auto_suggest','manual'));
 
@@ -71,7 +73,7 @@ alter table assignment_exercises alter exercise_id_int to exercise_id;
 
 alter table attempt_results add out_of_scale smallint default 0 not null;
 alter table attempt_results add out_of_scale_policy varchar(20);
-alter table attempt_results add constraint ck_attempt_results_status check (status in ('completed','invalid'));
+alter table attempt_results add constraint ck_attempt_results_status check (status in ('entered','completed','not_counted','invalid'));
 alter table attempt_results add constraint ck_attempt_results_out_of_scale check (out_of_scale in (0,1));
 
 alter table calculated_results alter thresholds_snapshot_json drop not null;

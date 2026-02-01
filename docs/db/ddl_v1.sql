@@ -59,7 +59,9 @@ create table test_sessions (
   rules_version varchar(20) not null,
   status varchar(20) not null,
   created_by varchar(100) not null,
-  created_at timestamp default current_timestamp
+  created_at timestamp default current_timestamp,
+  updated_at timestamp,
+  updated_by varchar(100)
 );
 
 create index ix_test_sessions_date on test_sessions(session_date);
@@ -84,10 +86,10 @@ create table session_participants (
   category_default_reason varchar(200),
   constraint ck_session_participants_category check (category_fp_assigned in (1,2,3)),
   constraint ck_session_participants_category_src check (category_fp_source in ('auto_default','manual_override','policy_force_3')),
-  constraint ck_session_participants_age_med_src check (age_group_med_source in ('manual','medical_commission')),
+  constraint ck_session_participants_age_med_src check (age_group_med_source is null or age_group_med_source in ('manual','medical_commission')),
   constraint ck_session_participants_sex_snapshot check (sex_snapshot in ('M','F')),
   constraint ck_session_participants_status check (participation_status in ('completed','refuse','no_show_invalid','no_show_valid','medical_exempt','lfk')),
-  constraint ck_session_participants_reason check (participation_reason_code in ('BUSINESS_TRIP','DUTY','VACATION','SICK_LEAVE','MEDICAL_EXEMPT','LFK','NO_SHOW'))
+  constraint ck_session_participants_reason check (participation_reason_code is null or participation_reason_code in ('BUSINESS_TRIP','DUTY','VACATION','SICK_LEAVE','MEDICAL_EXEMPT','LFK','NO_SHOW'))
 );
 
 create unique index ux_session_participants on session_participants(session_id, person_id);
@@ -127,7 +129,7 @@ create table attempt_results (
   norm_row_id varchar(50),
   out_of_scale smallint default 0 not null,
   out_of_scale_policy varchar(20),
-  constraint ck_attempt_results_status check (status in ('completed','invalid')),
+  constraint ck_attempt_results_status check (status in ('entered','completed','not_counted','invalid')),
   constraint ck_attempt_results_out_of_scale check (out_of_scale in (0,1))
 );
 

@@ -37,7 +37,8 @@ procedure TMainForm.FormCreate(Sender: TObject);
 var
   DbConfig: TDbConfig;
 begin
-  FReadOnlyMode := False;
+  FReadOnlyMode := True;
+  ApplyReadOnlyMode;
   FConfigPath := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) + 'config\app.ini';
   DbConfig := LoadDbConfig(FConfigPath);
   FMonitor := TConnectionMonitor.Create(
@@ -50,7 +51,6 @@ begin
   FMonitor.OnConnectionLost := @HandleConnectionLost;
   FMonitor.OnConnectionRestored := @HandleConnectionRestored;
   FMonitor.Start;
-  ApplyReadOnlyMode;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
