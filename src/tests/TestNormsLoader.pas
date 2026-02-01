@@ -18,6 +18,8 @@ begin
   Pack := LoadNormsPack('src\\tests\\fixtures\\valid');
   AssertTrue(Length(Pack.Thresholds) = 1, 'thresholds');
   AssertTrue(Length(Pack.Scales) = 1, 'scales');
+  AssertTrue(Length(Pack.Exercises) = 1, 'exercises');
+  AssertTrue(Length(Pack.ExerciseGrades) = 2, 'exercise grades');
 end;
 
 procedure TestInvalid;
