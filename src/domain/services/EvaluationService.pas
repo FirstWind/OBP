@@ -5,7 +5,7 @@ unit EvaluationService;
 interface
 
 uses
-  SysUtils, Scales, ScaleScoreService, ScoreService, Policies;
+  SysUtils, Scales, ScaleScoreService, ScoreService, Policies, ResultNormalizer;
 
 type
   EEvaluationError = class(Exception);
@@ -20,6 +20,19 @@ type
   end;
 
 function BuildPoints(const ScalesArr: TScales; const Attempts: array of TAttemptInput;
+  const Rounding: TRoundingPolicy; const OutPolicy: TOutOfScalePolicy): TArray<Integer>;
+
+type
+  TRawAttemptInput = record
+    ExerciseId: Integer;
+    Sex: Char;
+    AgeGroup: Integer;
+    Variant: string;
+    Status: string;
+    RawText: string;
+  end;
+
+function BuildPointsFromRaw(const ScalesArr: TScales; const Attempts: array of TRawAttemptInput;
   const Rounding: TRoundingPolicy; const OutPolicy: TOutOfScalePolicy): TArray<Integer>;
 
 function EvaluateParticipant(const Thresholds: TThresholds; const ScalesArr: TScales;
@@ -46,6 +59,30 @@ begin
     if idx < 0 then
       raise EEvaluationError.Create('NORM_SCALE_NOT_FOUND');
     Points := CalcPointsForResult(ScalesArr[idx], Attempts[i].RawValue, Rounding, OutPolicy);
+    Inc(count);
+    SetLength(Result, count);
+    Result[count - 1] := Points;
+  end;
+end;
+
+function BuildPointsFromRaw(const ScalesArr: TScales; const Attempts: array of TRawAttemptInput;
+  const Rounding: TRoundingPolicy; const OutPolicy: TOutOfScalePolicy): TArray<Integer>;
+var
+  i, idx, count: Integer;
+  Points: Integer;
+  NormValue: Double;
+begin
+  count := 0;
+  SetLength(Result, 0);
+  for i := 0 to High(Attempts) do
+  begin
+    if Attempts[i].Status <> 'completed' then
+      Continue;
+    idx := FindScale(ScalesArr, Attempts[i].ExerciseId, Attempts[i].Sex, Attempts[i].AgeGroup, Attempts[i].Variant);
+    if idx < 0 then
+      raise EEvaluationError.Create('NORM_SCALE_NOT_FOUND');
+    NormValue := NormalizeResult(ScalesArr[idx].ResultType, Attempts[i].RawText);
+    Points := CalcPointsForResult(ScalesArr[idx], NormValue, Rounding, OutPolicy);
     Inc(count);
     SetLength(Result, count);
     Result[count - 1] := Points;
