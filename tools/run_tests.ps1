@@ -10,6 +10,7 @@ if (-not (Test-Path $fpc)) {
 }
 
 $fu = @(
+  "-Fusrc/compat_fps",
   "-Fusrc/domain/entities",
   "-Fusrc/domain/services",
   "-Fusrc/domain/policies",
@@ -18,6 +19,8 @@ $fu = @(
   "-Fusrc/infrastructure/config",
   "-Fusrc/infrastructure/db",
   "-Fusrc/infrastructure/crypto",
+  "-Futhird_party/fpspreadsheet",
+  "-Fu$LazarusDir\\components\\lazutils",
   "-Fusrc/audit",
   "-Fusrc/locks",
   "-Fusrc/services",
@@ -49,6 +52,7 @@ $tests = @(
   "src/tests/TestSessionServiceCompile.pas",
   "src/tests/TestSessionEvaluationServiceCompile.pas",
   "src/tests/TestNormsPackServiceCompile.pas",
+  "src/tests/TestReportServiceCompile.pas",
   "src/tests/TestAssignmentPlanner.pas",
   "src/tests/TestAssignmentServiceCompile.pas",
   "src/tests/TestSessionSetupServiceCompile.pas",

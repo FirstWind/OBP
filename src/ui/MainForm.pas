@@ -7,10 +7,11 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, ExtCtrls,
-  StdCtrls, Grids, FileUtil,
+  StdCtrls, Grids, Printers,
   ConnectionMonitor, AppConfig, DbContext, AuditService, AssignmentService,
   SessionEvaluationService, PolicyDefaults, NormsPackLoader,
-  Exercises, SessionAssignmentEntity, AttemptResultEntity, CalculatedResultEntity;
+  Exercises, SessionAssignmentEntity, AttemptResultEntity, CalculatedResultEntity,
+  ReportService;
 
 type
   TMainForm = class(TForm)
@@ -26,7 +27,6 @@ type
     LabelSessionsHint: TLabel;
     LabelParticipantsHint: TLabel;
     LabelImportHint: TLabel;
-    LabelReportsHint: TLabel;
     PanelAssignTop: TPanel;
     LabelPack: TLabel;
     EditPackPath: TEdit;
@@ -42,6 +42,7 @@ type
     MemoExerciseIds: TMemo;
     BtnCreateAssignment: TButton;
     GridExercises: TStringGrid;
+    SelectDirDialog: TSelectDirectoryDialog;
     PanelResultsTop: TPanel;
     BtnLoadNorms: TButton;
     LblNormsInfo: TLabel;
@@ -52,6 +53,16 @@ type
     BtnEvaluate: TButton;
     LblEvalResult: TLabel;
     GridAttempts: TStringGrid;
+    PanelReportsTop: TPanel;
+    LabelReportParticipant: TLabel;
+    EditReportParticipantId: TEdit;
+    BtnPreviewReport: TButton;
+    BtnPrintReport: TButton;
+    BtnExportXlsx: TButton;
+    LabelPrinter: TLabel;
+    ComboPrinters: TComboBox;
+    MemoReportPreview: TMemo;
+    SaveDialogXlsx: TSaveDialog;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure BtnBrowsePackClick(Sender: TObject);
@@ -61,6 +72,9 @@ type
     procedure BtnLoadParticipantExercisesClick(Sender: TObject);
     procedure BtnSaveAttemptsClick(Sender: TObject);
     procedure BtnEvaluateClick(Sender: TObject);
+    procedure BtnPreviewReportClick(Sender: TObject);
+    procedure BtnPrintReportClick(Sender: TObject);
+    procedure BtnExportXlsxClick(Sender: TObject);
   private
     FReadOnlyMode: Boolean;
     FMonitor: TConnectionMonitor;
@@ -69,6 +83,7 @@ type
     FAudit: TAuditService;
     FAssignmentService: TAssignmentService;
     FEvaluationService: TSessionEvaluationService;
+    FReportService: TReportService;
     FCatalog: TExercises;
     FNorms: TLoadedNormsPack;
     FNormsLoaded: Boolean;
@@ -78,6 +93,7 @@ type
     procedure PopulateExercisesGrid;
     function ParseExerciseItems(out Items: TAssignmentExerciseArray): Boolean;
     procedure PopulateAttemptsGrid(const Exercises: TAssignmentExerciseArray);
+    procedure PrintLines(const Lines: TStrings);
   public
     procedure SetConnectionLost;
     procedure SetConnectionRestored;
@@ -100,6 +116,7 @@ begin
   FAudit := TAuditService.Create('');
   FAssignmentService := TAssignmentService.Create(FDb, FAudit);
   FEvaluationService := TSessionEvaluationService.Create(FDb, FAudit);
+  FReportService := TReportService.Create(FDb);
   FMonitor := TConnectionMonitor.Create(
     DbConfig.Host,
     DbConfig.Port,
@@ -112,6 +129,9 @@ begin
   FReadOnlyMode := True;
   ApplyReadOnlyMode;
   FMonitor.Start;
+  ComboPrinters.Items.Assign(Printer.Printers);
+  if ComboPrinters.Items.Count > 0 then
+    ComboPrinters.ItemIndex := Printer.PrinterIndex;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -123,6 +143,7 @@ begin
   end;
   FreeAndNil(FAssignmentService);
   FreeAndNil(FEvaluationService);
+  FreeAndNil(FReportService);
   FreeAndNil(FAudit);
   FreeAndNil(FDb);
 end;
@@ -159,12 +180,9 @@ begin
 end;
 
 procedure TMainForm.BtnBrowsePackClick(Sender: TObject);
-var
-  Dir: string;
 begin
-  Dir := EditPackPath.Text;
-  if SelectDirectory('Выберите Norms Pack', '', Dir, False) then
-    EditPackPath.Text := Dir;
+  if SelectDirDialog.Execute then
+    EditPackPath.Text := SelectDirDialog.FileName;
 end;
 
 procedure TMainForm.BtnLoadExercisesClick(Sender: TObject);
@@ -394,6 +412,93 @@ begin
       GridAttempts.Cells[3, i + 1] := Attempts[0].RawResultStr;
       GridAttempts.Cells[4, i + 1] := Attempts[0].Status;
     end;
+  end;
+end;
+
+procedure TMainForm.BtnPreviewReportClick(Sender: TObject);
+var
+  ParticipantId: Int64;
+  Lines: TStringList;
+begin
+  if not TryStrToInt64(Trim(EditReportParticipantId.Text), ParticipantId) then
+  begin
+    ShowMessage('Некорректный ID участника');
+    Exit;
+  end;
+  try
+    Lines := FReportService.BuildParticipantReport(ParticipantId);
+    try
+      MemoReportPreview.Lines.Assign(Lines);
+    finally
+      Lines.Free;
+    end;
+  except
+    on E: Exception do
+      ShowMessage('Ошибка отчёта: ' + E.Message);
+  end;
+end;
+
+procedure TMainForm.PrintLines(const Lines: TStrings);
+var
+  i: Integer;
+  y: Integer;
+  lineHeight: Integer;
+begin
+  if ComboPrinters.Items.Count = 0 then
+  begin
+    ShowMessage('Принтеры не найдены');
+    Exit;
+  end;
+  if ComboPrinters.ItemIndex >= 0 then
+    Printer.PrinterIndex := ComboPrinters.ItemIndex;
+  Printer.BeginDoc;
+  try
+    y := 100;
+    lineHeight := Printer.Canvas.TextHeight('Ag');
+    for i := 0 to Lines.Count - 1 do
+    begin
+      Printer.Canvas.TextOut(100, y, Lines[i]);
+      Inc(y, lineHeight + 2);
+      if y > Printer.PageHeight - 200 then
+      begin
+        Printer.NewPage;
+        y := 100;
+      end;
+    end;
+  finally
+    Printer.EndDoc;
+  end;
+end;
+
+procedure TMainForm.BtnPrintReportClick(Sender: TObject);
+begin
+  if MemoReportPreview.Lines.Count = 0 then
+  begin
+    ShowMessage('Сначала сформируйте отчёт (предпросмотр)');
+    Exit;
+  end;
+  PrintLines(MemoReportPreview.Lines);
+end;
+
+procedure TMainForm.BtnExportXlsxClick(Sender: TObject);
+var
+  ParticipantId: Int64;
+begin
+  if not TryStrToInt64(Trim(EditReportParticipantId.Text), ParticipantId) then
+  begin
+    ShowMessage('Некорректный ID участника');
+    Exit;
+  end;
+  SaveDialogXlsx.Filter := 'Excel (*.xlsx)|*.xlsx';
+  SaveDialogXlsx.DefaultExt := 'xlsx';
+  if not SaveDialogXlsx.Execute then
+    Exit;
+  try
+    FReportService.ExportParticipantReportXlsx(ParticipantId, SaveDialogXlsx.FileName);
+    ShowMessage('Экспорт завершён: ' + SaveDialogXlsx.FileName);
+  except
+    on E: Exception do
+      ShowMessage('Ошибка экспорта: ' + E.Message);
   end;
 end;
 

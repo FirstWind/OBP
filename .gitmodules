@@ -1,0 +1,3 @@
+[submodule "third_party/fpspreadsheet"]
+	path = third_party/fpspreadsheet
+	url = https://github.com/tcs-ulli/fpspreadsheet.git
