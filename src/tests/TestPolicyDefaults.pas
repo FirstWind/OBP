@@ -3,7 +3,7 @@ program TestPolicyDefaults;
 {$mode objfpc}{$H+}
 
 uses
-  SysUtils, PolicyDefaults, Policies, ScaleScoreService;
+  SysUtils, PolicyDefaults, Policies, ScaleScoreService, PolicySnapshot, fpjson, jsonparser;
 
 procedure AssertEqStr(const A, B, Msg: string);
 begin
@@ -36,9 +36,18 @@ begin
   AssertEqStr(R.Reps, 'integer_only', 'round reps');
 end;
 
+var
+  JsonStr: string;
+  Root: TJSONObject;
 begin
   try
     TestDefaults;
+    JsonStr := BuildPolicySnapshotJSON(DefaultExcusedStatusPolicy, DefaultWomenCategoryPolicy,
+      DefaultOutOfScalePolicy, DefaultRoundingPolicy, ap_disabled);
+    Root := GetJSON(JsonStr) as TJSONObject;
+    if Root.Strings['WomenCategoryPolicy'] <> 'force_3' then
+      raise Exception.Create('policy snapshot women');
+    Root.Free;
     WriteLn('OK');
   except
     on E: Exception do
