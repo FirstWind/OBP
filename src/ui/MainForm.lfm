@@ -1,0 +1,19 @@
+object MainForm: TMainForm
+  Left = 200
+  Height = 600
+  Top = 120
+  Width = 900
+  Caption = 'OBP'
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  object ContentPanel: TPanel
+    Align = alClient
+    Caption = 'Контент будет добавлен'
+    TabOrder = 0
+  end
+  object StatusBar: TStatusBar
+    Align = alBottom
+    SimplePanel = True
+    SimpleText = 'Подключено к серверу.'
+  end
+end
