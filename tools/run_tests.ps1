@@ -17,6 +17,7 @@ $fu = @(
   "-Fusrc/norms",
   "-Fusrc/infrastructure/config",
   "-Fusrc/infrastructure/db",
+  "-Fusrc/infrastructure/crypto",
   "-Fusrc/audit",
   "-Fusrc/locks",
   "-Fusrc/services",
@@ -36,6 +37,7 @@ $tests = @(
   "src/tests/TestExerciseGradeIntegration.pas",
   "src/tests/TestGoldenRunner.pas",
   "src/tests/TestResultNormalizer.pas",
+  "src/tests/TestHashUtils.pas",
   "src/tests/TestPolicyDefaults.pas",
   "src/tests/TestParticipationStatusService.pas",
   "src/tests/TestCategoryPolicyService.pas",
@@ -46,6 +48,7 @@ $tests = @(
   "src/tests/TestPersonServiceCompile.pas",
   "src/tests/TestSessionServiceCompile.pas",
   "src/tests/TestSessionEvaluationServiceCompile.pas",
+  "src/tests/TestNormsPackServiceCompile.pas",
   "src/tests/TestAssignmentServiceCompile.pas"
 )
 
