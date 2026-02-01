@@ -3,7 +3,7 @@ program TestEvaluationService;
 {$mode objfpc}{$H+}
 
 uses
-  SysUtils, NormsPack, Scales, EvaluationService, Policies;
+  SysUtils, NormsPack, Scales, EvaluationService, Policies, ScaleScoreService, ScoreService;
 
 procedure AssertEqStr(const A, B, Msg: string);
 begin

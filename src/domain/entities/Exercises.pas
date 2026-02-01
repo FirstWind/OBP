@@ -5,7 +5,7 @@ unit Exercises;
 interface
 
 uses
-  SysUtils, fpjson;
+  Classes, SysUtils, fpjson;
 
 type
   EExercisesError = class(Exception);
@@ -49,7 +49,7 @@ begin
     raise EExercisesError.Create('appendix10.json not found');
   Stream := TFileStream.Create(FilePath, fmOpenRead or fmShareDenyWrite);
   try
-    Parser := TJSONParser.Create(Stream, [joUTF8]);
+    Parser := TJSONParser.Create(Stream);
     try
       Root := Parser.Parse as TJSONObject;
     finally

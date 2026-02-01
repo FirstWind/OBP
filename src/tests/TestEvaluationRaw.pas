@@ -3,7 +3,7 @@ program TestEvaluationRaw;
 {$mode objfpc}{$H+}
 
 uses
-  SysUtils, Scales, EvaluationService, Policies;
+  SysUtils, Scales, EvaluationService, Policies, ScaleScoreService;
 
 procedure AssertEqInt(const A, B: Integer; const Msg: string);
 begin
@@ -16,7 +16,7 @@ var
   Scs: TScales;
   Attempts: array of TRawAttemptInput;
   Rounding: TRoundingPolicy;
-  Points: TArray<Integer>;
+  Points: TIntArray;
 begin
   Scs := LoadScalesFromAppendix12('src\\tests\\fixtures\\valid\\appendix12.json');
   SetLength(Attempts, 1);

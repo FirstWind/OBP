@@ -1,6 +1,7 @@
 program TestDomainBasics;
 
 {$mode objfpc}{$H+}
+{$codepage UTF8}
 
 uses
   SysUtils, TextNormalizer, AgeGroupService, AutoCategoryService, NRequiredService;

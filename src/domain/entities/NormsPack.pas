@@ -55,7 +55,7 @@ begin
     raise ENormsError.Create('appendix11.json not found');
   Stream := TFileStream.Create(FilePath, fmOpenRead or fmShareDenyWrite);
   try
-    Parser := TJSONParser.Create(Stream, [joUTF8]);
+    Parser := TJSONParser.Create(Stream);
     try
       Root := Parser.Parse as TJSONObject;
     finally

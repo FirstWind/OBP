@@ -3,7 +3,7 @@ program TestGoldenRunner;
 {$mode objfpc}{$H+}
 
 uses
-  SysUtils, GoldenFixtures, NormsPack, Scales, EvaluationService, Policies;
+  SysUtils, GoldenFixtures, NormsPack, Scales, EvaluationService, Policies, ScaleScoreService, ScoreService;
 
 procedure AssertEqInt(const A, B: Integer; const Msg: string);
 begin

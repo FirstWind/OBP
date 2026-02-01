@@ -5,7 +5,7 @@ unit ScaleScoreService;
 interface
 
 uses
-  SysUtils, Scales, Policies;
+  SysUtils, Math, Scales, Policies;
 
 type
   ERollingError = class(Exception);

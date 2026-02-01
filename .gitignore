@@ -1,0 +1,12 @@
+*.o
+*.ppu
+*.exe
+*.dll
+*.obj
+*.res
+*.compiled
+
+src/app/config/app.ini
+src/app/config/
+
+src/app/*.lfm

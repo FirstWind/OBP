@@ -25,7 +25,7 @@ var
 begin
   Stream := TFileStream.Create(FilePath, fmOpenRead or fmShareDenyWrite);
   try
-    Parser := TJSONParser.Create(Stream, [joUTF8]);
+  Parser := TJSONParser.Create(Stream);
     try
       Result := Parser.Parse;
     finally

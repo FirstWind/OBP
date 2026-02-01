@@ -5,7 +5,7 @@ unit GoldenFixtures;
 interface
 
 uses
-  SysUtils, fpjson;
+  Classes, SysUtils, fpjson;
 
 type
   TGoldenResult = record
@@ -48,7 +48,7 @@ begin
     raise Exception.Create('golden case not found');
   Stream := TFileStream.Create(FilePath, fmOpenRead or fmShareDenyWrite);
   try
-    Parser := TJSONParser.Create(Stream, [joUTF8]);
+    Parser := TJSONParser.Create(Stream);
     try
       Root := Parser.Parse as TJSONObject;
     finally

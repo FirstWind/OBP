@@ -1,6 +1,7 @@
 unit AutoCategoryService;
 
 {$mode objfpc}{$H+}
+{$codepage UTF8}
 
 interface
 

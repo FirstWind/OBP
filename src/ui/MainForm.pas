@@ -1,6 +1,7 @@
 unit MainForm;
 
 {$mode objfpc}{$H+}
+{$codepage UTF8}
 
 interface
 
@@ -27,7 +28,7 @@ type
   end;
 
 var
-  MainForm: TMainForm;
+  MainFormForm: TMainForm;
 
 implementation
 

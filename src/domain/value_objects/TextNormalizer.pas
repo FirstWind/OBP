@@ -1,6 +1,7 @@
 unit TextNormalizer;
 
 {$mode objfpc}{$H+}
+{$codepage UTF8}
 
 interface
 
@@ -13,33 +14,39 @@ uses
 
 function NormalizeText(const S: string): string;
 var
-  Tmp: string;
+  Tmp: UnicodeString;
+  OutU: UnicodeString;
   i: Integer;
   Space: Boolean;
-  C: Char;
+  C: WideChar;
 begin
-  Tmp := LowerCase(Trim(S));
-  Tmp := StringReplace(Tmp, 'ё', 'е', [rfReplaceAll]);
-  Result := '';
+  Tmp := UTF8Decode(Trim(S));
+  Tmp := UnicodeLowerCase(Tmp);
+  OutU := '';
   Space := False;
   for i := 1 to Length(Tmp) do
   begin
     C := Tmp[i];
+    if C = WideChar($0308) then
+      Continue;
+    if C = WideChar($0451) then
+      C := WideChar($0435);
     if C <= ' ' then
     begin
       if not Space then
       begin
-        Result := Result + ' ';
+        OutU := OutU + ' ';
         Space := True;
       end;
     end
     else
     begin
-      Result := Result + C;
+      OutU := OutU + C;
       Space := False;
     end;
   end;
-  Result := Trim(Result);
+  OutU := Trim(OutU);
+  Result := UTF8Encode(OutU);
 end;
 
 end.

@@ -5,10 +5,12 @@ unit EvaluationService;
 interface
 
 uses
-  SysUtils, Scales, ScaleScoreService, ScoreService, Policies, ResultNormalizer;
+  SysUtils, NormsPack, Scales, ScaleScoreService, ScoreService, Policies, ResultNormalizer;
 
 type
   EEvaluationError = class(Exception);
+
+  TIntArray = array of Integer;
 
   TAttemptInput = record
     ExerciseId: Integer;
@@ -20,7 +22,7 @@ type
   end;
 
 function BuildPoints(const ScalesArr: TScales; const Attempts: array of TAttemptInput;
-  const Rounding: TRoundingPolicy; const OutPolicy: TOutOfScalePolicy): TArray<Integer>;
+  const Rounding: TRoundingPolicy; const OutPolicy: TOutOfScalePolicy): TIntArray;
 
 type
   TRawAttemptInput = record
@@ -33,7 +35,7 @@ type
   end;
 
 function BuildPointsFromRaw(const ScalesArr: TScales; const Attempts: array of TRawAttemptInput;
-  const Rounding: TRoundingPolicy; const OutPolicy: TOutOfScalePolicy): TArray<Integer>;
+  const Rounding: TRoundingPolicy; const OutPolicy: TOutOfScalePolicy): TIntArray;
 
 function EvaluateParticipant(const Thresholds: TThresholds; const ScalesArr: TScales;
   const Attempts: array of TAttemptInput; const Sex: Char; const AgeGroup: Integer;
@@ -44,7 +46,7 @@ function EvaluateParticipant(const Thresholds: TThresholds; const ScalesArr: TSc
 implementation
 
 function BuildPoints(const ScalesArr: TScales; const Attempts: array of TAttemptInput;
-  const Rounding: TRoundingPolicy; const OutPolicy: TOutOfScalePolicy): TArray<Integer>;
+  const Rounding: TRoundingPolicy; const OutPolicy: TOutOfScalePolicy): TIntArray;
 var
   i, idx, count: Integer;
   Points: Integer;
@@ -66,7 +68,7 @@ begin
 end;
 
 function BuildPointsFromRaw(const ScalesArr: TScales; const Attempts: array of TRawAttemptInput;
-  const Rounding: TRoundingPolicy; const OutPolicy: TOutOfScalePolicy): TArray<Integer>;
+  const Rounding: TRoundingPolicy; const OutPolicy: TOutOfScalePolicy): TIntArray;
 var
   i, idx, count: Integer;
   Points: Integer;
@@ -95,7 +97,7 @@ function EvaluateParticipant(const Thresholds: TThresholds; const ScalesArr: TSc
   const OutPolicy: TOutOfScalePolicy; const Excused: TExcusedStatusPolicy;
   const ParticipationStatus: string): TFinalResult;
 var
-  Points: TArray<Integer>;
+  Points: TIntArray;
 begin
   Points := BuildPoints(ScalesArr, Attempts, Rounding, OutPolicy);
   Result := CalcFinalResult(Thresholds, Sex, AgeGroup, Category, NRequired, Points, Excused, ParticipationStatus);
