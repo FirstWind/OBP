@@ -125,13 +125,15 @@ quit;
 
 $srcRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 
-if ($DbFile -eq "") {
-  $DbFile = Join-Path $InstallDir "data\\obp.fdb"
-}
-
 Write-Section "Install to $InstallDir"
 New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null
 $InstallDir = (Resolve-Path $InstallDir).Path
+
+if ($DbFile -eq "") {
+  $DbFile = Join-Path $InstallDir "data\\obp.fdb"
+} elseif (-not [System.IO.Path]::IsPathRooted($DbFile)) {
+  $DbFile = Join-Path $InstallDir $DbFile
+}
 
 # Check/Install VC++ Redistributable
 $vcRedist = Join-Path $srcRoot "vc_redist.x64.exe"

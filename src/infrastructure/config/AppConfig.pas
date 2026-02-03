@@ -20,9 +20,16 @@ function LoadDbConfig(const FileName: string): TDbConfig;
 
 implementation
 
+function IsAbsolutePath(const Value: string): Boolean;
+begin
+  Result := (ExtractFileDrive(Value) <> '') or
+    ((Length(Value) >= 2) and (Value[1] = '\') and (Value[2] = '\'));
+end;
+
 function LoadDbConfig(const FileName: string): TDbConfig;
 var
   Ini: TIniFile;
+  BaseDir: string;
 begin
   if not FileExists(FileName) then
     raise Exception.Create('Config file not found: ' + FileName);
@@ -33,6 +40,11 @@ begin
     Result.DatabasePath := Ini.ReadString('db', 'database', '');
     Result.UserName := Ini.ReadString('db', 'user', '');
     Result.Password := Ini.ReadString('db', 'password', '');
+    if (Result.DatabasePath <> '') and (not IsAbsolutePath(Result.DatabasePath)) then
+    begin
+      BaseDir := ExtractFilePath(FileName);
+      Result.DatabasePath := ExpandFileName(IncludeTrailingPathDelimiter(BaseDir) + Result.DatabasePath);
+    end;
   finally
     Ini.Free;
   end;
