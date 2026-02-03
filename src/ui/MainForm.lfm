@@ -36,40 +36,64 @@ object MainForm: TMainForm
           object EditPersonsSearch: TEdit
             Left = 60
             Top = 16
-            Width = 240
+            Width = 200
             TabOrder = 0
           end
           object BtnPersonsSearch: TButton
-            Left = 310
+            Left = 270
             Top = 14
-            Width = 90
+            Width = 70
             Caption = 'Найти'
             OnClick = BtnPersonsSearchClick
             TabOrder = 1
           end
+          object LabelPersonsSex: TLabel
+            Left = 350
+            Top = 20
+            Caption = 'Пол:'
+          end
+          object ComboPersonsSex: TComboBox
+            Left = 385
+            Top = 16
+            Width = 70
+            Style = csDropDownList
+            TabOrder = 2
+          end
+          object LabelPersonsStatusFilter: TLabel
+            Left = 465
+            Top = 20
+            Caption = 'Статус:'
+          end
+          object ComboPersonsStatusFilter: TComboBox
+            Left = 525
+            Top = 16
+            Width = 140
+            Style = csDropDownList
+            TabOrder = 3
+          end
           object LabelPersonsLimit: TLabel
-            Left = 420
+            Left = 675
             Top = 20
             Caption = 'Лимит:'
           end
           object EditPersonsLimit: TEdit
-            Left = 470
+            Left = 725
             Top = 16
-            Width = 50
-            TabOrder = 2
+            Width = 45
+            TabOrder = 4
             Text = '200'
           end
           object BtnPersonsLoad: TButton
-            Left = 540
+            Left = 775
             Top = 14
-            Width = 110
+            Width = 90
             Caption = 'Обновить'
             OnClick = BtnPersonsLoadClick
-            TabOrder = 3
+            TabOrder = 5
           end
           object LabelPersonsCount: TLabel
-            Left = 670
-            Top = 20
+            Left = 8
+            Top = 38
             Caption = 'Записей: 0'
           end
         end
@@ -84,106 +108,512 @@ object MainForm: TMainForm
         end
         object PanelPersonEdit: TPanel
           Align = alBottom
-          Height = 96
+          Height = 230
           TabOrder = 2
-          object LabelPersonId: TLabel
-            Left = 8
-            Top = 8
-            Caption = 'ID:'
-          end
-          object EditPersonId: TEdit
-            Left = 40
-            Top = 4
-            Width = 80
-            ReadOnly = True
+          object PageControlPerson: TPageControl
+            Align = alClient
             TabOrder = 0
+            object TabPersonMain: TTabSheet
+              Caption = 'Основное'
+              object LabelPersonId: TLabel
+                Left = 8
+                Top = 12
+                Caption = 'ID:'
+              end
+              object EditPersonId: TEdit
+                Left = 60
+                Top = 8
+                Width = 70
+                ReadOnly = True
+                TabOrder = 0
+              end
+              object LabelPersonPersonalNo: TLabel
+                Left = 150
+                Top = 12
+                Caption = 'Личный №:'
+              end
+              object EditPersonPersonalNo: TEdit
+                Left = 230
+                Top = 8
+                Width = 140
+                ReadOnly = True
+                TabOrder = 1
+              end
+              object LabelPersonFullName: TLabel
+                Left = 380
+                Top = 12
+                Caption = 'ФИО:'
+              end
+              object EditPersonFullName: TEdit
+                Left = 430
+                Top = 8
+                Width = 420
+                ReadOnly = True
+                TabOrder = 2
+              end
+              object LabelPersonSex: TLabel
+                Left = 8
+                Top = 44
+                Caption = 'Пол:'
+              end
+              object ComboPersonSex: TComboBox
+                Left = 60
+                Top = 40
+                Width = 70
+                Style = csDropDownList
+                TabOrder = 3
+              end
+              object LabelPersonBirthDate: TLabel
+                Left = 150
+                Top = 44
+                Caption = 'Дата рожд.:'
+              end
+              object EditPersonBirthDate: TEdit
+                Left = 230
+                Top = 40
+                Width = 140
+                TextHint = 'дд.мм.гггг'
+                TabOrder = 4
+              end
+              object LabelPersonRank: TLabel
+                Left = 380
+                Top = 44
+                Caption = 'Звание:'
+              end
+              object EditPersonRank: TEdit
+                Left = 430
+                Top = 40
+                Width = 160
+                TabOrder = 5
+              end
+              object LabelPersonStatus: TLabel
+                Left = 610
+                Top = 44
+                Caption = 'Статус:'
+              end
+              object ComboPersonStatus: TComboBox
+                Left = 670
+                Top = 40
+                Width = 180
+                Style = csDropDownList
+                TabOrder = 6
+              end
+            end
+            object TabPersonOrg: TTabSheet
+              Caption = 'Оргструктура'
+              object LabelPersonPosition: TLabel
+                Left = 8
+                Top = 12
+                Caption = 'Должность:'
+              end
+              object EditPersonPosition: TEdit
+                Left = 90
+                Top = 8
+                Width = 260
+                TabOrder = 0
+              end
+              object LabelPersonGroup: TLabel
+                Left = 8
+                Top = 44
+                Caption = 'Группа:'
+              end
+              object EditPersonGroup: TEdit
+                Left = 90
+                Top = 40
+                Width = 260
+                TabOrder = 1
+              end
+              object LabelPersonDirection: TLabel
+                Left = 8
+                Top = 76
+                Caption = 'Направление:'
+              end
+              object EditPersonDirection: TEdit
+                Left = 110
+                Top = 72
+                Width = 240
+                TabOrder = 2
+              end
+              object LabelPersonDepartmentUnit: TLabel
+                Left = 8
+                Top = 108
+                Caption = 'Отделение:'
+              end
+              object EditPersonDepartmentUnit: TEdit
+                Left = 110
+                Top = 104
+                Width = 240
+                TabOrder = 3
+              end
+              object LabelPersonDepartment: TLabel
+                Left = 370
+                Top = 12
+                Caption = 'Отдел:'
+              end
+              object EditPersonDepartment: TEdit
+                Left = 430
+                Top = 8
+                Width = 220
+                TabOrder = 4
+              end
+              object LabelPersonService: TLabel
+                Left = 370
+                Top = 44
+                Caption = 'Служба:'
+              end
+              object EditPersonService: TEdit
+                Left = 430
+                Top = 40
+                Width = 220
+                TabOrder = 5
+              end
+              object LabelPersonReservePosition: TLabel
+                Left = 370
+                Top = 76
+                Caption = 'Резерв должн.:'
+              end
+              object EditPersonReservePosition: TEdit
+                Left = 470
+                Top = 72
+                Width = 180
+                TabOrder = 6
+              end
+              object LabelPersonActiveReserve: TLabel
+                Left = 370
+                Top = 108
+                Caption = 'Активный резерв:'
+              end
+              object EditPersonActiveReserve: TEdit
+                Left = 490
+                Top = 104
+                Width = 160
+                TabOrder = 7
+              end
+              object CheckPersonCommandReserve: TCheckBox
+                Left = 670
+                Top = 12
+                Caption = 'Резерв командирования'
+                TabOrder = 8
+              end
+            end
+            object TabPersonDocs: TTabSheet
+              Caption = 'Документы'
+              object LabelPersonCategory: TLabel
+                Left = 8
+                Top = 12
+                Caption = 'Категория:'
+              end
+              object EditPersonCategory: TEdit
+                Left = 90
+                Top = 8
+                Width = 260
+                TabOrder = 0
+              end
+              object CheckPersonSpecialAttestation: TCheckBox
+                Left = 370
+                Top = 10
+                Caption = 'Спецаттестация'
+                TabOrder = 1
+              end
+              object LabelPersonDactyl: TLabel
+                Left = 8
+                Top = 44
+                Caption = 'Дактилокарта:'
+              end
+              object EditPersonDactyl: TEdit
+                Left = 110
+                Top = 40
+                Width = 200
+                TabOrder = 2
+              end
+              object LabelPersonSnils: TLabel
+                Left = 8
+                Top = 76
+                Caption = 'СНИЛС:'
+              end
+              object EditPersonSnils: TEdit
+                Left = 110
+                Top = 72
+                Width = 200
+                TabOrder = 3
+              end
+              object LabelPersonInn: TLabel
+                Left = 8
+                Top = 108
+                Caption = 'ИНН:'
+              end
+              object EditPersonInn: TEdit
+                Left = 110
+                Top = 104
+                Width = 200
+                TabOrder = 4
+              end
+              object LabelPersonServiceId1: TLabel
+                Left = 370
+                Top = 44
+                Caption = 'Удост. №1:'
+              end
+              object EditPersonServiceId1: TEdit
+                Left = 460
+                Top = 40
+                Width = 200
+                TabOrder = 5
+              end
+              object LabelPersonServiceId2: TLabel
+                Left = 370
+                Top = 76
+                Caption = 'Удост. №2:'
+              end
+              object EditPersonServiceId2: TEdit
+                Left = 460
+                Top = 72
+                Width = 200
+                TabOrder = 6
+              end
+            end
+            object TabPersonDates: TTabSheet
+              Caption = 'Даты'
+              object LabelPersonPositionAssignedDate: TLabel
+                Left = 8
+                Top = 12
+                Caption = 'Назначение:'
+              end
+              object EditPersonPositionAssignedDate: TEdit
+                Left = 110
+                Top = 8
+                Width = 150
+                TextHint = 'дд.мм.гггг'
+                TabOrder = 0
+              end
+              object LabelPersonCombatStartDate: TLabel
+                Left = 8
+                Top = 44
+                Caption = 'Боевые с:'
+              end
+              object EditPersonCombatStartDate: TEdit
+                Left = 110
+                Top = 40
+                Width = 150
+                TextHint = 'дд.мм.гггг'
+                TabOrder = 1
+              end
+              object LabelPersonCombatEndDate: TLabel
+                Left = 8
+                Top = 76
+                Caption = 'Боевые по:'
+              end
+              object EditPersonCombatEndDate: TEdit
+                Left = 110
+                Top = 72
+                Width = 150
+                TextHint = 'дд.мм.гггг'
+                TabOrder = 2
+              end
+              object LabelPersonCombatRegion: TLabel
+                Left = 8
+                Top = 108
+                Caption = 'Регион БД:'
+              end
+              object MemoPersonCombatRegion: TMemo
+                Left = 110
+                Top = 104
+                Width = 310
+                Height = 50
+                TabOrder = 3
+              end
+              object LabelPersonAgentAdmissionDate: TLabel
+                Left = 440
+                Top = 12
+                Caption = 'Допуск (приказ):'
+              end
+              object EditPersonAgentAdmissionDate: TEdit
+                Left = 580
+                Top = 8
+                Width = 150
+                TextHint = 'дд.мм.гггг'
+                TabOrder = 4
+              end
+              object LabelPersonDispensaryDate: TLabel
+                Left = 440
+                Top = 44
+                Caption = 'Диспансер.:'
+              end
+              object EditPersonDispensaryDate: TEdit
+                Left = 580
+                Top = 40
+                Width = 150
+                TextHint = 'дд.мм.гггг'
+                TabOrder = 5
+              end
+              object LabelPersonGbServiceStart: TLabel
+                Left = 440
+                Top = 76
+                Caption = 'ГБ начало:'
+              end
+              object EditPersonGbServiceStartDate: TEdit
+                Left = 580
+                Top = 72
+                Width = 150
+                TextHint = 'дд.мм.гггг'
+                TabOrder = 6
+              end
+              object LabelPersonContractEnd: TLabel
+                Left = 440
+                Top = 108
+                Caption = 'Контракт до:'
+              end
+              object EditPersonContractEndDate: TEdit
+                Left = 580
+                Top = 104
+                Width = 150
+                TextHint = 'дд.мм.гггг'
+                TabOrder = 7
+              end
+              object LabelPersonDismissDate: TLabel
+                Left = 440
+                Top = 140
+                Caption = 'Увольнение:'
+              end
+              object EditPersonDismissDate: TEdit
+                Left = 580
+                Top = 136
+                Width = 150
+                TextHint = 'дд.мм.гггг'
+                TabOrder = 8
+              end
+              object LabelPersonDismissReason: TLabel
+                Left = 8
+                Top = 166
+                Caption = 'Причина увольн.:'
+              end
+              object MemoPersonDismissReason: TMemo
+                Left = 130
+                Top = 162
+                Width = 600
+                Height = 40
+                TabOrder = 9
+              end
+            end
+            object TabPersonMedical: TTabSheet
+              Caption = 'Медицина'
+              object LabelPersonHealthGroup: TLabel
+                Left = 8
+                Top = 12
+                Caption = 'Группа здоровья:'
+              end
+              object EditPersonHealthGroup: TEdit
+                Left = 130
+                Top = 8
+                Width = 200
+                TabOrder = 0
+              end
+              object LabelPersonPhysicalGroup: TLabel
+                Left = 8
+                Top = 44
+                Caption = 'Группа ФП:'
+              end
+              object EditPersonPhysicalGroup: TEdit
+                Left = 130
+                Top = 40
+                Width = 200
+                TabOrder = 1
+              end
+            end
+            object TabPersonSystem: TTabSheet
+              Caption = 'Система'
+              object LabelPersonCreatedAt: TLabel
+                Left = 8
+                Top = 12
+                Caption = 'Создан:'
+              end
+              object EditPersonCreatedAt: TEdit
+                Left = 80
+                Top = 8
+                Width = 150
+                ReadOnly = True
+                TabOrder = 0
+              end
+              object LabelPersonCreatedBy: TLabel
+                Left = 250
+                Top = 12
+                Caption = 'Создал:'
+              end
+              object EditPersonCreatedBy: TEdit
+                Left = 310
+                Top = 8
+                Width = 200
+                ReadOnly = True
+                TabOrder = 1
+              end
+              object LabelPersonUpdatedAt: TLabel
+                Left = 8
+                Top = 44
+                Caption = 'Изменён:'
+              end
+              object EditPersonUpdatedAt: TEdit
+                Left = 80
+                Top = 40
+                Width = 150
+                ReadOnly = True
+                TabOrder = 2
+              end
+              object LabelPersonUpdatedBy: TLabel
+                Left = 250
+                Top = 44
+                Caption = 'Изменил:'
+              end
+              object EditPersonUpdatedBy: TEdit
+                Left = 310
+                Top = 40
+                Width = 200
+                ReadOnly = True
+                TabOrder = 3
+              end
+              object LabelPersonStatusChangedAt: TLabel
+                Left = 8
+                Top = 76
+                Caption = 'Статус изм.:'
+              end
+              object EditPersonStatusChangedAt: TEdit
+                Left = 110
+                Top = 72
+                Width = 150
+                ReadOnly = True
+                TabOrder = 4
+              end
+              object LabelPersonLastImportId: TLabel
+                Left = 280
+                Top = 76
+                Caption = 'Импорт ID:'
+              end
+              object EditPersonLastImportId: TEdit
+                Left = 360
+                Top = 72
+                Width = 100
+                ReadOnly = True
+                TabOrder = 5
+              end
+              object CheckPersonIsDeleted: TCheckBox
+                Left = 480
+                Top = 74
+                Caption = 'Удалён'
+                Enabled = False
+                TabOrder = 6
+              end
+            end
           end
-          object LabelPersonPersonalNo: TLabel
-            Left = 130
-            Top = 8
-            Caption = 'Личный №:'
-          end
-          object EditPersonPersonalNo: TEdit
-            Left = 210
-            Top = 4
-            Width = 120
-            ReadOnly = True
+          object PanelPersonActions: TPanel
+            Align = alBottom
+            Height = 36
             TabOrder = 1
-          end
-          object LabelPersonFullName: TLabel
-            Left = 340
-            Top = 8
-            Caption = 'ФИО:'
-          end
-          object EditPersonFullName: TEdit
-            Left = 380
-            Top = 4
-            Width = 240
-            ReadOnly = True
-            TabOrder = 2
-          end
-          object LabelPersonPosition: TLabel
-            Left = 8
-            Top = 40
-            Caption = 'Должность:'
-          end
-          object EditPersonPosition: TEdit
-            Left = 90
-            Top = 36
-            Width = 240
-            TabOrder = 3
-          end
-          object LabelPersonDepartment: TLabel
-            Left = 340
-            Top = 40
-            Caption = 'Отдел:'
-          end
-          object EditPersonDepartment: TEdit
-            Left = 390
-            Top = 36
-            Width = 230
-            TabOrder = 4
-          end
-          object LabelPersonService: TLabel
-            Left = 8
-            Top = 68
-            Caption = 'Служба:'
-          end
-          object EditPersonService: TEdit
-            Left = 90
-            Top = 64
-            Width = 240
-            TabOrder = 5
-          end
-          object LabelPersonCategory: TLabel
-            Left = 340
-            Top = 68
-            Caption = 'Категория:'
-          end
-          object EditPersonCategory: TEdit
-            Left = 420
-            Top = 64
-            Width = 200
-            TabOrder = 6
-          end
-          object LabelPersonStatus: TLabel
-            Left = 630
-            Top = 40
-            Caption = 'Статус:'
-          end
-          object ComboPersonStatus: TComboBox
-            Left = 690
-            Top = 36
-            Width = 160
-            TabOrder = 7
-          end
-          object BtnPersonSave: TButton
-            Left = 690
-            Top = 64
-            Width = 160
-            Caption = 'Сохранить'
-            OnClick = BtnPersonSaveClick
-            TabOrder = 8
+            object BtnPersonSave: TButton
+              Left = 720
+              Top = 4
+              Width = 140
+              Caption = 'Сохранить'
+              OnClick = BtnPersonSaveClick
+              TabOrder = 0
+            end
           end
         end
       end

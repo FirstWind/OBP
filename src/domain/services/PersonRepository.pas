@@ -14,6 +14,7 @@ type
     function GetByPersonalNo(const PersonalNo: string; out Person: TPerson): Boolean;
     function List(const Offset, Limit: Integer): TPersonArray;
     function Search(const QueryText: string; const Limit: Integer): TPersonArray;
+    function SearchAdvanced(const QueryText, StatusValue, SexValue: string; const Offset, Limit: Integer): TPersonArray;
     function Insert(const Person: TPerson): Int64;
     procedure Update(const Person: TPerson);
     procedure MarkDeleted(const Id: Int64; const ActorId: string);

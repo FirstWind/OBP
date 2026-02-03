@@ -21,6 +21,7 @@ type
     function GetByPersonalNo(const PersonalNo: string; out Person: TPerson): Boolean;
     function List(const Offset, Limit: Integer): TPersonArray;
     function Search(const QueryText: string; const Limit: Integer): TPersonArray;
+    function SearchAdvanced(const QueryText, StatusValue, SexValue: string; const Offset, Limit: Integer): TPersonArray;
     function Insert(const Person: TPerson): Int64;
     procedure Update(const Person: TPerson);
     procedure MarkDeleted(const Id: Int64; const ActorId: string);
@@ -240,6 +241,69 @@ begin
         'order by id';
       Q := '%' + UpperCase(Trim(QueryText)) + '%';
       Query.ParamByName('q').AsString := Q;
+      Query.Open;
+      while not Query.EOF do
+      begin
+        Person := MapPerson(Query);
+        AppendPerson(Result, Person);
+        Query.Next;
+      end;
+      Query.Close;
+      if StartedHere then
+        FTransaction.Commit;
+    except
+      on E: Exception do
+      begin
+        if StartedHere and FTransaction.Active then
+          FTransaction.Rollback;
+        raise;
+      end;
+    end;
+  finally
+    Query.Free;
+  end;
+end;
+
+function TPersonRepositoryFb.SearchAdvanced(const QueryText, StatusValue, SexValue: string;
+  const Offset, Limit: Integer): TPersonArray;
+var
+  Query: TSQLQuery;
+  StartedHere: Boolean;
+  Person: TPerson;
+  Q: string;
+  SqlText: string;
+begin
+  Result := nil;
+  EnsureConnection;
+  StartedHere := not FTransaction.Active;
+  if StartedHere then
+    FTransaction.StartTransaction;
+  Query := TSQLQuery.Create(nil);
+  try
+    try
+      Query.DataBase := FConnection;
+      Query.Transaction := FTransaction;
+      SqlText := Format('select first %d skip %d * from persons where is_deleted = 0',
+        [Limit, Offset]);
+      if Trim(QueryText) <> '' then
+        SqlText := SqlText +
+          ' and (upper(full_name) like :q or upper(personal_no) like :q or ' +
+          'upper(position) like :q or upper(department) like :q or upper(service) like :q)';
+      if Trim(StatusValue) <> '' then
+        SqlText := SqlText + ' and status = :status';
+      if Trim(SexValue) <> '' then
+        SqlText := SqlText + ' and sex = :sex';
+      SqlText := SqlText + ' order by full_name';
+      Query.SQL.Text := SqlText;
+      if Trim(QueryText) <> '' then
+      begin
+        Q := '%' + UpperCase(Trim(QueryText)) + '%';
+        Query.ParamByName('q').AsString := Q;
+      end;
+      if Trim(StatusValue) <> '' then
+        Query.ParamByName('status').AsString := Trim(StatusValue);
+      if Trim(SexValue) <> '' then
+        Query.ParamByName('sex').AsString := Trim(SexValue);
       Query.Open;
       while not Query.EOF do
       begin

@@ -34,22 +34,99 @@ type
     EditPersonsLimit: TEdit;
     BtnPersonsLoad: TButton;
     LabelPersonsCount: TLabel;
+    LabelPersonsSex: TLabel;
+    ComboPersonsSex: TComboBox;
+    LabelPersonsStatusFilter: TLabel;
+    ComboPersonsStatusFilter: TComboBox;
     GridPersons: TStringGrid;
     PanelPersonEdit: TPanel;
+    PageControlPerson: TPageControl;
+    TabPersonMain: TTabSheet;
+    TabPersonOrg: TTabSheet;
+    TabPersonDocs: TTabSheet;
+    TabPersonDates: TTabSheet;
+    TabPersonMedical: TTabSheet;
+    TabPersonSystem: TTabSheet;
+    PanelPersonActions: TPanel;
     LabelPersonId: TLabel;
     EditPersonId: TEdit;
     LabelPersonPersonalNo: TLabel;
     EditPersonPersonalNo: TEdit;
     LabelPersonFullName: TLabel;
     EditPersonFullName: TEdit;
+    LabelPersonSex: TLabel;
+    ComboPersonSex: TComboBox;
+    LabelPersonBirthDate: TLabel;
+    EditPersonBirthDate: TEdit;
+    LabelPersonRank: TLabel;
+    EditPersonRank: TEdit;
     LabelPersonPosition: TLabel;
     EditPersonPosition: TEdit;
+    LabelPersonGroup: TLabel;
+    EditPersonGroup: TEdit;
+    LabelPersonDirection: TLabel;
+    EditPersonDirection: TEdit;
+    LabelPersonDepartmentUnit: TLabel;
+    EditPersonDepartmentUnit: TEdit;
     LabelPersonDepartment: TLabel;
     EditPersonDepartment: TEdit;
     LabelPersonService: TLabel;
     EditPersonService: TEdit;
     LabelPersonCategory: TLabel;
     EditPersonCategory: TEdit;
+    LabelPersonReservePosition: TLabel;
+    EditPersonReservePosition: TEdit;
+    LabelPersonActiveReserve: TLabel;
+    EditPersonActiveReserve: TEdit;
+    CheckPersonCommandReserve: TCheckBox;
+    LabelPersonDactyl: TLabel;
+    EditPersonDactyl: TEdit;
+    LabelPersonSnils: TLabel;
+    EditPersonSnils: TEdit;
+    LabelPersonInn: TLabel;
+    EditPersonInn: TEdit;
+    LabelPersonServiceId1: TLabel;
+    EditPersonServiceId1: TEdit;
+    LabelPersonServiceId2: TLabel;
+    EditPersonServiceId2: TEdit;
+    CheckPersonSpecialAttestation: TCheckBox;
+    LabelPersonCombatRegion: TLabel;
+    MemoPersonCombatRegion: TMemo;
+    LabelPersonDismissReason: TLabel;
+    MemoPersonDismissReason: TMemo;
+    LabelPersonPositionAssignedDate: TLabel;
+    EditPersonPositionAssignedDate: TEdit;
+    LabelPersonCombatStartDate: TLabel;
+    EditPersonCombatStartDate: TEdit;
+    LabelPersonCombatEndDate: TLabel;
+    EditPersonCombatEndDate: TEdit;
+    LabelPersonAgentAdmissionDate: TLabel;
+    EditPersonAgentAdmissionDate: TEdit;
+    LabelPersonDispensaryDate: TLabel;
+    EditPersonDispensaryDate: TEdit;
+    LabelPersonGbServiceStart: TLabel;
+    EditPersonGbServiceStartDate: TEdit;
+    LabelPersonContractEnd: TLabel;
+    EditPersonContractEndDate: TEdit;
+    LabelPersonDismissDate: TLabel;
+    EditPersonDismissDate: TEdit;
+    LabelPersonHealthGroup: TLabel;
+    EditPersonHealthGroup: TEdit;
+    LabelPersonPhysicalGroup: TLabel;
+    EditPersonPhysicalGroup: TEdit;
+    LabelPersonCreatedAt: TLabel;
+    EditPersonCreatedAt: TEdit;
+    LabelPersonCreatedBy: TLabel;
+    EditPersonCreatedBy: TEdit;
+    LabelPersonUpdatedAt: TLabel;
+    EditPersonUpdatedAt: TEdit;
+    LabelPersonUpdatedBy: TLabel;
+    EditPersonUpdatedBy: TEdit;
+    LabelPersonStatusChangedAt: TLabel;
+    EditPersonStatusChangedAt: TEdit;
+    LabelPersonLastImportId: TLabel;
+    EditPersonLastImportId: TEdit;
+    CheckPersonIsDeleted: TCheckBox;
     LabelPersonStatus: TLabel;
     ComboPersonStatus: TComboBox;
     BtnPersonSave: TButton;
@@ -147,6 +224,8 @@ type
     procedure LoadPersons(const QueryText: string);
     procedure SetSelectedPersonFields(const Person: TPerson);
     function GetSelectedPersonIndex: Integer;
+    procedure SetDateEdit(const Edit: TEdit; const Value: TDateTime);
+    function GetDateEdit(const Edit: TEdit): TDateTime;
   public
     procedure SetConnectionLost;
     procedure SetConnectionRestored;
@@ -238,6 +317,31 @@ begin
       ComboPersonStatus.Items.Add('inactive_dismissed');
       ComboPersonStatus.Items.Add('inactive_other');
       ComboPersonStatus.ItemIndex := 0;
+    end;
+    if Assigned(ComboPersonSex) then
+    begin
+      ComboPersonSex.Items.Clear;
+      ComboPersonSex.Items.Add('M');
+      ComboPersonSex.Items.Add('F');
+      ComboPersonSex.ItemIndex := 0;
+    end;
+    if Assigned(ComboPersonsSex) then
+    begin
+      ComboPersonsSex.Items.Clear;
+      ComboPersonsSex.Items.Add('Все');
+      ComboPersonsSex.Items.Add('M');
+      ComboPersonsSex.Items.Add('F');
+      ComboPersonsSex.ItemIndex := 0;
+    end;
+    if Assigned(ComboPersonsStatusFilter) then
+    begin
+      ComboPersonsStatusFilter.Items.Clear;
+      ComboPersonsStatusFilter.Items.Add('Все');
+      ComboPersonsStatusFilter.Items.Add('active');
+      ComboPersonsStatusFilter.Items.Add('inactive_commandered');
+      ComboPersonsStatusFilter.Items.Add('inactive_dismissed');
+      ComboPersonsStatusFilter.Items.Add('inactive_other');
+      ComboPersonsStatusFilter.ItemIndex := 0;
     end;
     if Assigned(EditPersonsSearch) then
       EditPersonsSearch.OnKeyDown := @EditPersonsSearchKeyDown;
@@ -545,6 +649,27 @@ begin
   end;
 end;
 
+procedure TMainForm.SetDateEdit(const Edit: TEdit; const Value: TDateTime);
+begin
+  if not Assigned(Edit) then Exit;
+  if Value > 0 then
+    Edit.Text := FormatDateTime('dd.mm.yyyy', Value)
+  else
+    Edit.Text := '';
+end;
+
+function TMainForm.GetDateEdit(const Edit: TEdit): TDateTime;
+var
+  FS: TFormatSettings;
+begin
+  Result := 0;
+  if not Assigned(Edit) then Exit;
+  if Trim(Edit.Text) = '' then Exit;
+  FS := DefaultFormatSettings;
+  if not TryStrToDate(Edit.Text, Result, FS) then
+    Result := 0;
+end;
+
 procedure TMainForm.PopulatePersonsGrid;
 var
   i: Integer;
@@ -588,14 +713,19 @@ end;
 procedure TMainForm.LoadPersons(const QueryText: string);
 var
   Limit: Integer;
+  SexFilter: string;
+  StatusFilter: string;
 begin
   Limit := StrToIntDef(Trim(EditPersonsLimit.Text), 200);
   if Limit <= 0 then
     Limit := 200;
-  if Trim(QueryText) = '' then
-    FPersons := FDb.Persons.List(0, Limit)
-  else
-    FPersons := FDb.Persons.Search(QueryText, Limit);
+  SexFilter := '';
+  StatusFilter := '';
+  if Assigned(ComboPersonsSex) and (ComboPersonsSex.ItemIndex > 0) then
+    SexFilter := ComboPersonsSex.Items[ComboPersonsSex.ItemIndex];
+  if Assigned(ComboPersonsStatusFilter) and (ComboPersonsStatusFilter.ItemIndex > 0) then
+    StatusFilter := ComboPersonsStatusFilter.Items[ComboPersonsStatusFilter.ItemIndex];
+  FPersons := FDb.Persons.SearchAdvanced(Trim(QueryText), StatusFilter, SexFilter, 0, Limit);
   PopulatePersonsGrid;
   FPersonsLoaded := True;
   if Length(FPersons) > 0 then
@@ -607,10 +737,57 @@ begin
   EditPersonId.Text := IntToStr(Person.Id);
   EditPersonPersonalNo.Text := Person.PersonalNo;
   EditPersonFullName.Text := Person.FullName;
+  if Assigned(ComboPersonSex) then
+    ComboPersonSex.ItemIndex := ComboPersonSex.Items.IndexOf(String(Person.Sex));
+  SetDateEdit(EditPersonBirthDate, Person.BirthDate);
+  EditPersonRank.Text := Person.Rank;
   EditPersonPosition.Text := Person.Position;
+  EditPersonGroup.Text := Person.GroupName;
+  EditPersonDirection.Text := Person.Direction;
+  EditPersonDepartmentUnit.Text := Person.DepartmentUnit;
   EditPersonDepartment.Text := Person.Department;
   EditPersonService.Text := Person.Service;
+  EditPersonReservePosition.Text := Person.ReservePosition;
+  EditPersonActiveReserve.Text := Person.ActiveReserve1;
+  CheckPersonCommandReserve.Checked := Person.IsCommandReserve;
   EditPersonCategory.Text := Person.EmployeeCategory;
+  EditPersonDactyl.Text := Person.DactylCardRegNo;
+  EditPersonSnils.Text := Person.Snils;
+  EditPersonInn.Text := Person.Inn;
+  EditPersonServiceId1.Text := Person.ServiceId1;
+  EditPersonServiceId2.Text := Person.ServiceId2;
+  CheckPersonSpecialAttestation.Checked := Person.SpecialAttestationPresent;
+  MemoPersonCombatRegion.Text := Person.CombatRegion;
+  MemoPersonDismissReason.Text := Person.DismissReason;
+  SetDateEdit(EditPersonPositionAssignedDate, Person.PositionAssignedDate);
+  SetDateEdit(EditPersonCombatStartDate, Person.CombatStartDate);
+  SetDateEdit(EditPersonCombatEndDate, Person.CombatEndDate);
+  SetDateEdit(EditPersonAgentAdmissionDate, Person.AgentAdmissionOrderDate);
+  SetDateEdit(EditPersonDispensaryDate, Person.DispensaryDate);
+  SetDateEdit(EditPersonGbServiceStartDate, Person.GbServicePeriodStart);
+  SetDateEdit(EditPersonContractEndDate, Person.ContractEndDate);
+  SetDateEdit(EditPersonDismissDate, Person.DismissDate);
+  EditPersonHealthGroup.Text := Person.HealthGroup;
+  EditPersonPhysicalGroup.Text := Person.PhysicalGroup;
+  if Person.CreatedAt > 0 then
+    EditPersonCreatedAt.Text := FormatDateTime('yyyy-mm-dd hh:nn', Person.CreatedAt)
+  else
+    EditPersonCreatedAt.Text := '';
+  EditPersonCreatedBy.Text := Person.CreatedBy;
+  if Person.UpdatedAt > 0 then
+    EditPersonUpdatedAt.Text := FormatDateTime('yyyy-mm-dd hh:nn', Person.UpdatedAt)
+  else
+    EditPersonUpdatedAt.Text := '';
+  EditPersonUpdatedBy.Text := Person.UpdatedBy;
+  if Person.StatusChangedAt > 0 then
+    EditPersonStatusChangedAt.Text := FormatDateTime('yyyy-mm-dd hh:nn', Person.StatusChangedAt)
+  else
+    EditPersonStatusChangedAt.Text := '';
+  if Person.LastImportId > 0 then
+    EditPersonLastImportId.Text := IntToStr(Person.LastImportId)
+  else
+    EditPersonLastImportId.Text := '';
+  CheckPersonIsDeleted.Checked := Person.IsDeleted;
   ComboPersonStatus.ItemIndex := ComboPersonStatus.Items.IndexOf(PersonStatusToString(Person.Status));
 end;
 
@@ -678,12 +855,54 @@ begin
     Exit;
   end;
   Person := FPersons[Index];
+  if Assigned(ComboPersonSex) and (ComboPersonSex.ItemIndex >= 0) then
+    Person.Sex := ComboPersonSex.Items[ComboPersonSex.ItemIndex][1];
+  Person.BirthDate := GetDateEdit(EditPersonBirthDate);
+  if (Person.Sex <> 'M') and (Person.Sex <> 'F') then
+  begin
+    ShowMessage('Пол обязателен');
+    Exit;
+  end;
+  if Person.BirthDate = 0 then
+  begin
+    ShowMessage('Дата рождения обязательна');
+    Exit;
+  end;
+  Person.Rank := Trim(EditPersonRank.Text);
   Person.Position := Trim(EditPersonPosition.Text);
+  Person.GroupName := Trim(EditPersonGroup.Text);
+  Person.Direction := Trim(EditPersonDirection.Text);
+  Person.DepartmentUnit := Trim(EditPersonDepartmentUnit.Text);
   Person.Department := Trim(EditPersonDepartment.Text);
   Person.Service := Trim(EditPersonService.Text);
+  Person.ReservePosition := Trim(EditPersonReservePosition.Text);
+  Person.ActiveReserve1 := Trim(EditPersonActiveReserve.Text);
+  Person.IsCommandReserve := CheckPersonCommandReserve.Checked;
   Person.EmployeeCategory := Trim(EditPersonCategory.Text);
+  Person.DactylCardRegNo := Trim(EditPersonDactyl.Text);
+  Person.Snils := Trim(EditPersonSnils.Text);
+  Person.Inn := Trim(EditPersonInn.Text);
+  Person.ServiceId1 := Trim(EditPersonServiceId1.Text);
+  Person.ServiceId2 := Trim(EditPersonServiceId2.Text);
+  Person.SpecialAttestationPresent := CheckPersonSpecialAttestation.Checked;
+  Person.CombatRegion := Trim(MemoPersonCombatRegion.Text);
+  Person.DismissReason := Trim(MemoPersonDismissReason.Text);
+  Person.PositionAssignedDate := GetDateEdit(EditPersonPositionAssignedDate);
+  Person.CombatStartDate := GetDateEdit(EditPersonCombatStartDate);
+  Person.CombatEndDate := GetDateEdit(EditPersonCombatEndDate);
+  Person.AgentAdmissionOrderDate := GetDateEdit(EditPersonAgentAdmissionDate);
+  Person.DispensaryDate := GetDateEdit(EditPersonDispensaryDate);
+  Person.GbServicePeriodStart := GetDateEdit(EditPersonGbServiceStartDate);
+  Person.ContractEndDate := GetDateEdit(EditPersonContractEndDate);
+  Person.DismissDate := GetDateEdit(EditPersonDismissDate);
+  Person.HealthGroup := Trim(EditPersonHealthGroup.Text);
+  Person.PhysicalGroup := Trim(EditPersonPhysicalGroup.Text);
   if ComboPersonStatus.ItemIndex >= 0 then
+  begin
+    if PersonStatusToString(Person.Status) <> ComboPersonStatus.Items[ComboPersonStatus.ItemIndex] then
+      Person.StatusChangedAt := Now;
     Person.Status := PersonStatusFromString(ComboPersonStatus.Items[ComboPersonStatus.ItemIndex]);
+  end;
   try
     FPersonService.UpdatePerson(Person);
     FPersons[Index] := Person;
