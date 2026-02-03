@@ -14,10 +14,13 @@ type
     FTransaction: TSQLTransaction;
     function MapPerson(const Query: TSQLQuery): TPerson;
     procedure EnsureConnection;
+    procedure AppendPerson(var Items: TPersonArray; const Person: TPerson);
   public
     constructor Create(const Connection: TSQLConnection; const Transaction: TSQLTransaction);
     function GetById(const Id: Int64; out Person: TPerson): Boolean;
     function GetByPersonalNo(const PersonalNo: string; out Person: TPerson): Boolean;
+    function List(const Offset, Limit: Integer): TPersonArray;
+    function Search(const QueryText: string; const Limit: Integer): TPersonArray;
     function Insert(const Person: TPerson): Int64;
     procedure Update(const Person: TPerson);
     procedure MarkDeleted(const Id: Int64; const ActorId: string);
@@ -36,6 +39,15 @@ procedure TPersonRepositoryFb.EnsureConnection;
 begin
   if not FConnection.Connected then
     FConnection.Open;
+end;
+
+procedure TPersonRepositoryFb.AppendPerson(var Items: TPersonArray; const Person: TPerson);
+var
+  L: Integer;
+begin
+  L := Length(Items);
+  SetLength(Items, L + 1);
+  Items[L] := Person;
 end;
 
 function TPersonRepositoryFb.MapPerson(const Query: TSQLQuery): TPerson;
@@ -145,6 +157,95 @@ begin
       begin
         Person := MapPerson(Query);
         Result := True;
+      end;
+      Query.Close;
+      if StartedHere then
+        FTransaction.Commit;
+    except
+      on E: Exception do
+      begin
+        if StartedHere and FTransaction.Active then
+          FTransaction.Rollback;
+        raise;
+      end;
+    end;
+  finally
+    Query.Free;
+  end;
+end;
+
+function TPersonRepositoryFb.List(const Offset, Limit: Integer): TPersonArray;
+var
+  Query: TSQLQuery;
+  StartedHere: Boolean;
+  SqlText: string;
+  Person: TPerson;
+begin
+  Result := nil;
+  EnsureConnection;
+  StartedHere := not FTransaction.Active;
+  if StartedHere then
+    FTransaction.StartTransaction;
+  Query := TSQLQuery.Create(nil);
+  try
+    try
+      Query.DataBase := FConnection;
+      Query.Transaction := FTransaction;
+      SqlText := Format('select first %d skip %d * from persons where is_deleted = 0 order by id',
+        [Limit, Offset]);
+      Query.SQL.Text := SqlText;
+      Query.Open;
+      while not Query.EOF do
+      begin
+        Person := MapPerson(Query);
+        AppendPerson(Result, Person);
+        Query.Next;
+      end;
+      Query.Close;
+      if StartedHere then
+        FTransaction.Commit;
+    except
+      on E: Exception do
+      begin
+        if StartedHere and FTransaction.Active then
+          FTransaction.Rollback;
+        raise;
+      end;
+    end;
+  finally
+    Query.Free;
+  end;
+end;
+
+function TPersonRepositoryFb.Search(const QueryText: string; const Limit: Integer): TPersonArray;
+var
+  Query: TSQLQuery;
+  StartedHere: Boolean;
+  Person: TPerson;
+  Q: string;
+begin
+  Result := nil;
+  EnsureConnection;
+  StartedHere := not FTransaction.Active;
+  if StartedHere then
+    FTransaction.StartTransaction;
+  Query := TSQLQuery.Create(nil);
+  try
+    try
+      Query.DataBase := FConnection;
+      Query.Transaction := FTransaction;
+      Query.SQL.Text :=
+        'select first ' + IntToStr(Limit) + ' * from persons ' +
+        'where is_deleted = 0 and (upper(full_name) like :q or upper(personal_no) like :q) ' +
+        'order by id';
+      Q := '%' + UpperCase(Trim(QueryText)) + '%';
+      Query.ParamByName('q').AsString := Q;
+      Query.Open;
+      while not Query.EOF do
+      begin
+        Person := MapPerson(Query);
+        AppendPerson(Result, Person);
+        Query.Next;
       end;
       Query.Close;
       if StartedHere then

@@ -11,6 +11,7 @@ uses
   ConnectionMonitor, AppConfig, DbContext, AuditService, AssignmentService,
   SessionEvaluationService, PolicyDefaults, NormsPackLoader,
   Exercises, SessionAssignmentEntity, AttemptResultEntity, CalculatedResultEntity,
+  PersonEntity, PersonService,
   ReportService, DbMaintenanceService;
 
 type
@@ -25,7 +26,32 @@ type
     TabImport: TTabSheet;
     TabReports: TTabSheet;
     LabelSessionsHint: TLabel;
-    LabelParticipantsHint: TLabel;
+    PanelParticipantsTop: TPanel;
+    LabelPersonsSearch: TLabel;
+    EditPersonsSearch: TEdit;
+    BtnPersonsSearch: TButton;
+    LabelPersonsLimit: TLabel;
+    EditPersonsLimit: TEdit;
+    BtnPersonsLoad: TButton;
+    GridPersons: TStringGrid;
+    PanelPersonEdit: TPanel;
+    LabelPersonId: TLabel;
+    EditPersonId: TEdit;
+    LabelPersonPersonalNo: TLabel;
+    EditPersonPersonalNo: TEdit;
+    LabelPersonFullName: TLabel;
+    EditPersonFullName: TEdit;
+    LabelPersonPosition: TLabel;
+    EditPersonPosition: TEdit;
+    LabelPersonDepartment: TLabel;
+    EditPersonDepartment: TEdit;
+    LabelPersonService: TLabel;
+    EditPersonService: TEdit;
+    LabelPersonCategory: TLabel;
+    EditPersonCategory: TEdit;
+    LabelPersonStatus: TLabel;
+    ComboPersonStatus: TComboBox;
+    BtnPersonSave: TButton;
     LabelImportHint: TLabel;
     PanelAssignTop: TPanel;
     LabelPack: TLabel;
@@ -75,6 +101,11 @@ type
     procedure BtnPreviewReportClick(Sender: TObject);
     procedure BtnPrintReportClick(Sender: TObject);
     procedure BtnExportXlsxClick(Sender: TObject);
+    procedure BtnPersonsLoadClick(Sender: TObject);
+    procedure BtnPersonsSearchClick(Sender: TObject);
+    procedure GridPersonsSelectCell(Sender: TObject; aCol, aRow: Integer;
+      var CanSelect: Boolean);
+    procedure BtnPersonSaveClick(Sender: TObject);
   private
     FReadOnlyMode: Boolean;
     // Maintenance UI references (dynamic)
@@ -87,6 +118,7 @@ type
     FDbPath: string;
     FDb: TDbContext;
     FAudit: TAuditService;
+    FPersonService: TPersonService;
     FAssignmentService: TAssignmentService;
     FEvaluationService: TSessionEvaluationService;
     FReportService: TReportService;
@@ -94,6 +126,7 @@ type
     FCatalog: TExercises;
     FNorms: TLoadedNormsPack;
     FNormsLoaded: Boolean;
+    FPersons: TPersonArray;
     
     // Event handlers for dynamic buttons
     procedure BtnTruncateClick(Sender: TObject);
@@ -106,6 +139,10 @@ type
     function ParseExerciseItems(out Items: TAssignmentExerciseArray): Boolean;
     procedure PopulateAttemptsGrid(const Exercises: TAssignmentExerciseArray);
     procedure PrintLines(const Lines: TStrings);
+    procedure PopulatePersonsGrid;
+    procedure LoadPersons(const QueryText: string);
+    procedure SetSelectedPersonFields(const Person: TPerson);
+    function GetSelectedPersonIndex: Integer;
   public
     procedure SetConnectionLost;
     procedure SetConnectionRestored;
@@ -137,6 +174,7 @@ begin
     
     StepToCheck := 'Create Services';
     FAudit := TAuditService.Create('');
+    FPersonService := TPersonService.Create(FDb, FAudit);
     FAssignmentService := TAssignmentService.Create(FDb, FAudit);
     FEvaluationService := TSessionEvaluationService.Create(FDb, FAudit);
     FReportService := TReportService.Create(FDb);
@@ -186,6 +224,17 @@ begin
     ApplyReadOnlyMode;
     StepToCheck := 'Start Monitor';
     FMonitor.Start;
+
+    StepToCheck := 'Init Persons UI';
+    if Assigned(ComboPersonStatus) then
+    begin
+      ComboPersonStatus.Items.Clear;
+      ComboPersonStatus.Items.Add('active');
+      ComboPersonStatus.Items.Add('inactive_commandered');
+      ComboPersonStatus.Items.Add('inactive_dismissed');
+      ComboPersonStatus.Items.Add('inactive_other');
+      ComboPersonStatus.ItemIndex := 0;
+    end;
     
     StepToCheck := 'Init Printers';
     try
@@ -213,6 +262,7 @@ begin
     FMonitor.Stop;
     FreeAndNil(FMonitor);
   end;
+  FreeAndNil(FPersonService);
   FreeAndNil(FAssignmentService);
   FreeAndNil(FEvaluationService);
   FreeAndNil(FReportService);
@@ -485,6 +535,131 @@ begin
       GridAttempts.Cells[3, i + 1] := Attempts[0].RawResultStr;
       GridAttempts.Cells[4, i + 1] := Attempts[0].Status;
     end;
+  end;
+end;
+
+procedure TMainForm.PopulatePersonsGrid;
+var
+  i: Integer;
+  RowIndex: Integer;
+begin
+  GridPersons.ColCount := 10;
+  GridPersons.RowCount := Length(FPersons) + 1;
+  if GridPersons.RowCount < 2 then
+    GridPersons.RowCount := 2;
+  GridPersons.Cells[0, 0] := 'ID';
+  GridPersons.Cells[1, 0] := 'Личный №';
+  GridPersons.Cells[2, 0] := 'ФИО';
+  GridPersons.Cells[3, 0] := 'Пол';
+  GridPersons.Cells[4, 0] := 'Дата рождения';
+  GridPersons.Cells[5, 0] := 'Должность';
+  GridPersons.Cells[6, 0] := 'Отдел';
+  GridPersons.Cells[7, 0] := 'Служба';
+  GridPersons.Cells[8, 0] := 'Категория';
+  GridPersons.Cells[9, 0] := 'Статус';
+  for i := 0 to High(FPersons) do
+  begin
+    RowIndex := i + 1;
+    GridPersons.Cells[0, RowIndex] := IntToStr(FPersons[i].Id);
+    GridPersons.Cells[1, RowIndex] := FPersons[i].PersonalNo;
+    GridPersons.Cells[2, RowIndex] := FPersons[i].FullName;
+    GridPersons.Cells[3, RowIndex] := FPersons[i].Sex;
+    if FPersons[i].BirthDate > 0 then
+      GridPersons.Cells[4, RowIndex] := FormatDateTime('yyyy-mm-dd', FPersons[i].BirthDate)
+    else
+      GridPersons.Cells[4, RowIndex] := '';
+    GridPersons.Cells[5, RowIndex] := FPersons[i].Position;
+    GridPersons.Cells[6, RowIndex] := FPersons[i].Department;
+    GridPersons.Cells[7, RowIndex] := FPersons[i].Service;
+    GridPersons.Cells[8, RowIndex] := FPersons[i].EmployeeCategory;
+    GridPersons.Cells[9, RowIndex] := PersonStatusToString(FPersons[i].Status);
+  end;
+end;
+
+procedure TMainForm.LoadPersons(const QueryText: string);
+var
+  Limit: Integer;
+begin
+  Limit := StrToIntDef(Trim(EditPersonsLimit.Text), 200);
+  if Limit <= 0 then
+    Limit := 200;
+  if Trim(QueryText) = '' then
+    FPersons := FDb.Persons.List(0, Limit)
+  else
+    FPersons := FDb.Persons.Search(QueryText, Limit);
+  PopulatePersonsGrid;
+  if Length(FPersons) > 0 then
+    SetSelectedPersonFields(FPersons[0]);
+end;
+
+procedure TMainForm.SetSelectedPersonFields(const Person: TPerson);
+begin
+  EditPersonId.Text := IntToStr(Person.Id);
+  EditPersonPersonalNo.Text := Person.PersonalNo;
+  EditPersonFullName.Text := Person.FullName;
+  EditPersonPosition.Text := Person.Position;
+  EditPersonDepartment.Text := Person.Department;
+  EditPersonService.Text := Person.Service;
+  EditPersonCategory.Text := Person.EmployeeCategory;
+  ComboPersonStatus.ItemIndex := ComboPersonStatus.Items.IndexOf(PersonStatusToString(Person.Status));
+end;
+
+function TMainForm.GetSelectedPersonIndex: Integer;
+var
+  RowIndex: Integer;
+begin
+  RowIndex := GridPersons.Row - 1;
+  if (RowIndex < 0) or (RowIndex > High(FPersons)) then
+    Exit(-1);
+  Result := RowIndex;
+end;
+
+procedure TMainForm.BtnPersonsLoadClick(Sender: TObject);
+begin
+  LoadPersons('');
+end;
+
+procedure TMainForm.BtnPersonsSearchClick(Sender: TObject);
+begin
+  LoadPersons(Trim(EditPersonsSearch.Text));
+end;
+
+procedure TMainForm.GridPersonsSelectCell(Sender: TObject; aCol, aRow: Integer;
+  var CanSelect: Boolean);
+var
+  Index: Integer;
+begin
+  Index := aRow - 1;
+  if (Index >= 0) and (Index <= High(FPersons)) then
+    SetSelectedPersonFields(FPersons[Index]);
+end;
+
+procedure TMainForm.BtnPersonSaveClick(Sender: TObject);
+var
+  Index: Integer;
+  Person: TPerson;
+begin
+  Index := GetSelectedPersonIndex;
+  if Index < 0 then
+  begin
+    ShowMessage('Выберите запись');
+    Exit;
+  end;
+  Person := FPersons[Index];
+  Person.Position := Trim(EditPersonPosition.Text);
+  Person.Department := Trim(EditPersonDepartment.Text);
+  Person.Service := Trim(EditPersonService.Text);
+  Person.EmployeeCategory := Trim(EditPersonCategory.Text);
+  if ComboPersonStatus.ItemIndex >= 0 then
+    Person.Status := PersonStatusFromString(ComboPersonStatus.Items[ComboPersonStatus.ItemIndex]);
+  try
+    FPersonService.UpdatePerson(Person);
+    FPersons[Index] := Person;
+    PopulatePersonsGrid;
+    ShowMessage('Сохранено');
+  except
+    on E: Exception do
+      ShowMessage('Ошибка сохранения: ' + E.Message);
   end;
 end;
 

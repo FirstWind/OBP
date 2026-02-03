@@ -60,6 +60,8 @@ type
     IsDeleted: Boolean;
   end;
 
+  TPersonArray = array of TPerson;
+
 function PersonStatusToString(const Value: TPersonStatus): string;
 function PersonStatusFromString(const Value: string): TPersonStatus;
 

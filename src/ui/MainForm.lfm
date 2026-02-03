@@ -23,10 +23,162 @@ object MainForm: TMainForm
       end
       object TabParticipants: TTabSheet
         Caption = 'Участники'
-        object LabelParticipantsHint: TLabel
-          Left = 16
-          Top = 16
-          Caption = 'Экран в разработке'
+        object PanelParticipantsTop: TPanel
+          Align = alTop
+          Height = 48
+          TabOrder = 0
+          object LabelPersonsSearch: TLabel
+            Left = 8
+            Top = 16
+            Caption = 'Поиск:'
+          end
+          object EditPersonsSearch: TEdit
+            Left = 60
+            Top = 12
+            Width = 260
+            TabOrder = 0
+          end
+          object BtnPersonsSearch: TButton
+            Left = 330
+            Top = 10
+            Width = 100
+            Caption = 'Найти'
+            OnClick = BtnPersonsSearchClick
+            TabOrder = 1
+          end
+          object LabelPersonsLimit: TLabel
+            Left = 450
+            Top = 16
+            Caption = 'Лимит:'
+          end
+          object EditPersonsLimit: TEdit
+            Left = 500
+            Top = 12
+            Width = 60
+            TabOrder = 2
+            Text = '200'
+          end
+          object BtnPersonsLoad: TButton
+            Left = 580
+            Top = 10
+            Width = 120
+            Caption = 'Загрузить'
+            OnClick = BtnPersonsLoadClick
+            TabOrder = 3
+          end
+        end
+        object GridPersons: TStringGrid
+          Align = alClient
+          ColCount = 10
+          FixedCols = 0
+          RowCount = 2
+          Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRowSelect]
+          TabOrder = 1
+          OnSelectCell = GridPersonsSelectCell
+        end
+        object PanelPersonEdit: TPanel
+          Align = alBottom
+          Height = 96
+          TabOrder = 2
+          object LabelPersonId: TLabel
+            Left = 8
+            Top = 8
+            Caption = 'ID:'
+          end
+          object EditPersonId: TEdit
+            Left = 40
+            Top = 4
+            Width = 80
+            ReadOnly = True
+            TabOrder = 0
+          end
+          object LabelPersonPersonalNo: TLabel
+            Left = 130
+            Top = 8
+            Caption = 'Личный №:'
+          end
+          object EditPersonPersonalNo: TEdit
+            Left = 210
+            Top = 4
+            Width = 120
+            ReadOnly = True
+            TabOrder = 1
+          end
+          object LabelPersonFullName: TLabel
+            Left = 340
+            Top = 8
+            Caption = 'ФИО:'
+          end
+          object EditPersonFullName: TEdit
+            Left = 380
+            Top = 4
+            Width = 240
+            ReadOnly = True
+            TabOrder = 2
+          end
+          object LabelPersonPosition: TLabel
+            Left = 8
+            Top = 40
+            Caption = 'Должность:'
+          end
+          object EditPersonPosition: TEdit
+            Left = 90
+            Top = 36
+            Width = 240
+            TabOrder = 3
+          end
+          object LabelPersonDepartment: TLabel
+            Left = 340
+            Top = 40
+            Caption = 'Отдел:'
+          end
+          object EditPersonDepartment: TEdit
+            Left = 390
+            Top = 36
+            Width = 230
+            TabOrder = 4
+          end
+          object LabelPersonService: TLabel
+            Left = 8
+            Top = 68
+            Caption = 'Служба:'
+          end
+          object EditPersonService: TEdit
+            Left = 90
+            Top = 64
+            Width = 240
+            TabOrder = 5
+          end
+          object LabelPersonCategory: TLabel
+            Left = 340
+            Top = 68
+            Caption = 'Категория:'
+          end
+          object EditPersonCategory: TEdit
+            Left = 420
+            Top = 64
+            Width = 200
+            TabOrder = 6
+          end
+          object LabelPersonStatus: TLabel
+            Left = 630
+            Top = 40
+            Caption = 'Статус:'
+          end
+          object ComboPersonStatus: TComboBox
+            Left = 690
+            Top = 36
+            Width = 160
+            TabOrder = 7
+          end
+          object BtnPersonSave: TButton
+            Left = 690
+            Top = 64
+            Width = 160
+            Caption = 'Сохранить'
+            OnClick = BtnPersonSaveClick
+            TabOrder = 8
+          end
         end
       end
       object TabAssignments: TTabSheet
