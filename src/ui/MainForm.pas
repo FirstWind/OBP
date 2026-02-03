@@ -7,7 +7,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, ExtCtrls,
-  StdCtrls, Grids, Printers,
+  StdCtrls, Grids, Printers, LCLType,
   ConnectionMonitor, AppConfig, DbContext, AuditService, AssignmentService,
   SessionEvaluationService, PolicyDefaults, NormsPackLoader,
   Exercises, SessionAssignmentEntity, AttemptResultEntity, CalculatedResultEntity,
@@ -33,6 +33,7 @@ type
     LabelPersonsLimit: TLabel;
     EditPersonsLimit: TEdit;
     BtnPersonsLoad: TButton;
+    LabelPersonsCount: TLabel;
     GridPersons: TStringGrid;
     PanelPersonEdit: TPanel;
     LabelPersonId: TLabel;
@@ -106,6 +107,8 @@ type
     procedure GridPersonsSelectCell(Sender: TObject; aCol, aRow: Integer;
       var CanSelect: Boolean);
     procedure BtnPersonSaveClick(Sender: TObject);
+    procedure TabParticipantsShow(Sender: TObject);
+    procedure EditPersonsSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     FReadOnlyMode: Boolean;
     // Maintenance UI references (dynamic)
@@ -127,6 +130,7 @@ type
     FNorms: TLoadedNormsPack;
     FNormsLoaded: Boolean;
     FPersons: TPersonArray;
+    FPersonsLoaded: Boolean;
     
     // Event handlers for dynamic buttons
     procedure BtnTruncateClick(Sender: TObject);
@@ -235,6 +239,9 @@ begin
       ComboPersonStatus.Items.Add('inactive_other');
       ComboPersonStatus.ItemIndex := 0;
     end;
+    if Assigned(EditPersonsSearch) then
+      EditPersonsSearch.OnKeyDown := @EditPersonsSearchKeyDown;
+    FPersonsLoaded := False;
     
     StepToCheck := 'Init Printers';
     try
@@ -574,6 +581,8 @@ begin
     GridPersons.Cells[8, RowIndex] := FPersons[i].EmployeeCategory;
     GridPersons.Cells[9, RowIndex] := PersonStatusToString(FPersons[i].Status);
   end;
+  if Assigned(LabelPersonsCount) then
+    LabelPersonsCount.Caption := 'Записей: ' + IntToStr(Length(FPersons));
 end;
 
 procedure TMainForm.LoadPersons(const QueryText: string);
@@ -588,6 +597,7 @@ begin
   else
     FPersons := FDb.Persons.Search(QueryText, Limit);
   PopulatePersonsGrid;
+  FPersonsLoaded := True;
   if Length(FPersons) > 0 then
     SetSelectedPersonFields(FPersons[0]);
 end;
@@ -632,6 +642,28 @@ begin
   Index := aRow - 1;
   if (Index >= 0) and (Index <= High(FPersons)) then
     SetSelectedPersonFields(FPersons[Index]);
+end;
+
+procedure TMainForm.TabParticipantsShow(Sender: TObject);
+begin
+  if not FPersonsLoaded then
+  begin
+    try
+      LoadPersons('');
+    except
+      on E: Exception do
+        ShowMessage('Ошибка загрузки списка: ' + E.Message);
+    end;
+  end;
+end;
+
+procedure TMainForm.EditPersonsSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_RETURN then
+  begin
+    BtnPersonsSearchClick(Sender);
+    Key := 0;
+  end;
 end;
 
 procedure TMainForm.BtnPersonSaveClick(Sender: TObject);
