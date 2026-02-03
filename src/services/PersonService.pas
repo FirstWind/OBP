@@ -1,6 +1,7 @@
 unit PersonService;
 
 {$mode objfpc}{$H+}
+{$codepage UTF8}
 
 interface
 
@@ -15,9 +16,12 @@ type
     function BuildAuditRecord(const Action: string; const PersonId: Int64): TAuditRecord;
   public
     constructor Create(const Db: TDbContext; const Audit: TAuditService);
-    function CreatePerson(var Person: TPerson): Int64;
-    procedure UpdatePerson(const Person: TPerson);
-    procedure DeletePerson(const PersonId: Int64);
+    function CreatePerson(var Person: TPerson; CommitTx: Boolean = True): Int64;
+    procedure UpdatePerson(const Person: TPerson; CommitTx: Boolean = True);
+    procedure DeletePerson(const PersonId: Int64; CommitTx: Boolean = True);
+    procedure BeginTx;
+    procedure Commit;
+    procedure Rollback;
   end;
 
 implementation
@@ -38,7 +42,22 @@ begin
   Result.DataJson := '';
 end;
 
-function TPersonService.CreatePerson(var Person: TPerson): Int64;
+procedure TPersonService.BeginTx;
+begin
+  FDb.BeginTx;
+end;
+
+procedure TPersonService.Commit;
+begin
+  FDb.Commit;
+end;
+
+procedure TPersonService.Rollback;
+begin
+  FDb.Rollback;
+end;
+
+function TPersonService.CreatePerson(var Person: TPerson; CommitTx: Boolean = True): Int64;
 begin
   if Person.CreatedBy = '' then
     Person.CreatedBy := FAudit.ActorId;
@@ -49,17 +68,17 @@ begin
     Result := FDb.Persons.Insert(Person);
     Person.Id := Result;
     FAudit.Log(FDb.Connection, FDb.Transaction, BuildAuditRecord('create', Person.Id));
-    FDb.Commit;
+    if CommitTx then FDb.Commit;
   except
     on E: Exception do
     begin
-      FDb.Rollback;
+      if CommitTx then FDb.Rollback;
       raise;
     end;
   end;
 end;
 
-procedure TPersonService.UpdatePerson(const Person: TPerson);
+procedure TPersonService.UpdatePerson(const Person: TPerson; CommitTx: Boolean = True);
 var
   Work: TPerson;
 begin
@@ -70,27 +89,27 @@ begin
   try
     FDb.Persons.Update(Work);
     FAudit.Log(FDb.Connection, FDb.Transaction, BuildAuditRecord('update', Work.Id));
-    FDb.Commit;
+    if CommitTx then FDb.Commit;
   except
     on E: Exception do
     begin
-      FDb.Rollback;
+      if CommitTx then FDb.Rollback;
       raise;
     end;
   end;
 end;
 
-procedure TPersonService.DeletePerson(const PersonId: Int64);
+procedure TPersonService.DeletePerson(const PersonId: Int64; CommitTx: Boolean = True);
 begin
   FDb.BeginTx;
   try
     FDb.Persons.MarkDeleted(PersonId, FAudit.ActorId);
     FAudit.Log(FDb.Connection, FDb.Transaction, BuildAuditRecord('delete', PersonId));
-    FDb.Commit;
+    if CommitTx then FDb.Commit;
   except
     on E: Exception do
     begin
-      FDb.Rollback;
+      if CommitTx then FDb.Rollback;
       raise;
     end;
   end;

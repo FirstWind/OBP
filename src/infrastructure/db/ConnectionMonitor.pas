@@ -69,24 +69,33 @@ constructor TConnectionMonitor.Create(const Host: string; Port: Integer; const D
   const UserName: string; const Password: string);
 begin
   inherited Create;
-  FHost := Host;
-  FPort := Port;
-  FDatabase := DatabasePath;
-  FUserName := UserName;
-  FPassword := Password;
+  try
+    FHost := Host;
+    FPort := Port;
+    FDatabase := DatabasePath;
+    FUserName := UserName;
+    FPassword := Password;
 
-  FConnection := TIBConnection.Create(nil);
-  FTransaction := TSQLTransaction.Create(nil);
-  FTransaction.DataBase := FConnection;
-  FConnection.Transaction := FTransaction;
-  FConnection.HostName := FHost;
-  FConnection.Port := FPort;
-  FConnection.DatabaseName := FDatabase;
-  FConnection.UserName := FUserName;
-  FConnection.Password := FPassword;
+    FConnection := TIBConnection.Create(nil);
+    FTransaction := TSQLTransaction.Create(nil);
+    
+    // Explicitly set empty LoginPrompt to avoid UI interaction issues in threads
+    FConnection.LoginPrompt := False;
+    
+    FTransaction.DataBase := FConnection;
+    FConnection.Transaction := FTransaction;
+    FConnection.HostName := FHost;
+    FConnection.Port := FPort;
+    FConnection.DatabaseName := FDatabase;
+    FConnection.UserName := FUserName;
+    FConnection.Password := FPassword;
 
-  FWasConnected := False;
-  FHasNotifiedLost := False;
+    FWasConnected := False;
+    FHasNotifiedLost := False;
+  except
+    on E: Exception do
+      raise Exception.Create('ConnectionMonitor.Create failed: ' + E.Message);
+  end;
 end;
 
 destructor TConnectionMonitor.Destroy;

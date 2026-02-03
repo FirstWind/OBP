@@ -41,6 +41,31 @@ tools\build_app.ps1
 src\app\OBP.exe
 ```
 
+## Offline / переносной дистрибутив
+Готовый переносной пакет собирается скриптом и подходит для установки без интернета (с флешки).
+
+### Сборка пакета
+```
+tools\portable\make_portable.ps1
+```
+Результат: `out\OBP_Portable_<timestamp>_<gitsha>\`
+
+### Установка на целевой машине
+1) Скопировать папку `OBP_Portable_...` на компьютер.
+2) Запустить:
+```
+install.cmd
+```
+Скрипт:
+- установит/обновит Visual C++ Redistributable (из файла `vc_redist.x64.exe` в пакете);
+- создаст БД и применит `docs\db\ddl_v1.sql` (embedded режим);
+- запустит локальный Firebird (application mode) и настроит `app\config\app.ini`.
+
+Запуск приложения:
+```
+run_obp.cmd
+```
+
 ## Norms Pack
 Нормативные данные должны находиться в папке `docs/norms/<norms_id>/`.
 Пример: `docs/norms/rfp2015_v1`.

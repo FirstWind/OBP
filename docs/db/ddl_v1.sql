@@ -5,7 +5,7 @@ create table persons (
   full_name varchar(200) not null,
   sex char(1) not null,
   birth_date date not null,
-  position varchar(200),
+  "position" varchar(200),
   "group" varchar(100),
   direction varchar(100),
   department_unit varchar(200),
@@ -84,10 +84,10 @@ create table session_participants (
   category_fp_assigned smallint not null,
   category_fp_source varchar(20) not null,
   category_default_reason varchar(200),
-  constraint ck_session_participants_category check (category_fp_assigned in (1,2,3)),
-  constraint ck_session_participants_category_src check (category_fp_source in ('auto_default','manual_override','policy_force_3')),
-  constraint ck_session_participants_age_med_src check (age_group_med_source is null or age_group_med_source in ('manual','medical_commission')),
-  constraint ck_session_participants_sex_snapshot check (sex_snapshot in ('M','F')),
+  constraint ck_sess_part_category check (category_fp_assigned in (1,2,3)),
+  constraint ck_sess_part_src check (category_fp_source in ('auto_default','manual_override','policy_force_3')),
+  constraint ck_sess_part_age_src check (age_group_med_source is null or age_group_med_source in ('manual','medical_commission')),
+  constraint ck_sess_part_sex_snap check (sex_snapshot in ('M','F')),
   constraint ck_session_participants_status check (participation_status in ('completed','refuse','no_show_invalid','no_show_valid','medical_exempt','lfk')),
   constraint ck_session_participants_reason check (participation_reason_code is null or participation_reason_code in ('BUSINESS_TRIP','DUTY','VACATION','SICK_LEAVE','MEDICAL_EXEMPT','LFK','NO_SHOW'))
 );
@@ -113,7 +113,7 @@ create table assignment_exercises (
   quality_group varchar(20) not null,
   sort_order smallint,
   is_counted smallint default 1,
-  constraint ck_assignment_exercises_is_counted check (is_counted in (0,1))
+  constraint ck_assign_ex_is_counted check (is_counted in (0,1))
 );
 
 create table attempt_results (

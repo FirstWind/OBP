@@ -11,7 +11,7 @@ uses
   ConnectionMonitor, AppConfig, DbContext, AuditService, AssignmentService,
   SessionEvaluationService, PolicyDefaults, NormsPackLoader,
   Exercises, SessionAssignmentEntity, AttemptResultEntity, CalculatedResultEntity,
-  ReportService;
+  ReportService, DbMaintenanceService;
 
 type
   TMainForm = class(TForm)
@@ -77,16 +77,28 @@ type
     procedure BtnExportXlsxClick(Sender: TObject);
   private
     FReadOnlyMode: Boolean;
+    // Maintenance UI references (dynamic)
+    BtnTruncate: TButton;
+    BtnSweep: TButton;
+    BtnStats: TButton;
+    
     FMonitor: TConnectionMonitor;
     FConfigPath: string;
+    FDbPath: string;
     FDb: TDbContext;
     FAudit: TAuditService;
     FAssignmentService: TAssignmentService;
     FEvaluationService: TSessionEvaluationService;
     FReportService: TReportService;
+    FMaintenanceService: TDbMaintenanceService;
     FCatalog: TExercises;
     FNorms: TLoadedNormsPack;
     FNormsLoaded: Boolean;
+    
+    // Event handlers for dynamic buttons
+    procedure BtnTruncateClick(Sender: TObject);
+    procedure BtnSweepClick(Sender: TObject);
+    procedure BtnStatsClick(Sender: TObject);
     procedure ApplyReadOnlyMode;
     procedure HandleConnectionLost(Sender: TObject);
     procedure HandleConnectionRestored(Sender: TObject);
@@ -109,29 +121,89 @@ implementation
 procedure TMainForm.FormCreate(Sender: TObject);
 var
   DbConfig: TDbConfig;
+  StepToCheck: string;
 begin
-  FConfigPath := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) + 'config\app.ini';
-  DbConfig := LoadDbConfig(FConfigPath);
-  FDb := TDbContext.Create(DbConfig);
-  FAudit := TAuditService.Create('');
-  FAssignmentService := TAssignmentService.Create(FDb, FAudit);
-  FEvaluationService := TSessionEvaluationService.Create(FDb, FAudit);
-  FReportService := TReportService.Create(FDb);
-  FMonitor := TConnectionMonitor.Create(
-    DbConfig.Host,
-    DbConfig.Port,
-    DbConfig.DatabasePath,
-    DbConfig.UserName,
-    DbConfig.Password
-  );
-  FMonitor.OnConnectionLost := @HandleConnectionLost;
-  FMonitor.OnConnectionRestored := @HandleConnectionRestored;
-  FReadOnlyMode := True;
-  ApplyReadOnlyMode;
-  FMonitor.Start;
-  ComboPrinters.Items.Assign(Printer.Printers);
-  if ComboPrinters.Items.Count > 0 then
-    ComboPrinters.ItemIndex := Printer.PrinterIndex;
+  StepToCheck := 'Start';
+  try
+    StepToCheck := 'Init Config Path';
+    FConfigPath := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) + 'config\app.ini';
+    
+    StepToCheck := 'Load DbConfig';
+    DbConfig := LoadDbConfig(FConfigPath);
+    FDbPath := DbConfig.DatabasePath;
+    
+    StepToCheck := 'Create DbContext';
+    FDb := TDbContext.Create(DbConfig);
+    
+    StepToCheck := 'Create Services';
+    FAudit := TAuditService.Create('');
+    FAssignmentService := TAssignmentService.Create(FDb, FAudit);
+    FEvaluationService := TSessionEvaluationService.Create(FDb, FAudit);
+    FReportService := TReportService.Create(FDb);
+    FMaintenanceService := TDbMaintenanceService.Create(FDb.Connection, FDb.Transaction);
+    
+    StepToCheck := 'Create UI Buttons';
+    // Create Maintenance Buttons dynamically on TabImport
+    if TabImport <> nil then
+    begin
+      BtnTruncate := TButton.Create(Self);
+      BtnTruncate.Parent := TabImport;
+      BtnTruncate.Left := 20;
+      BtnTruncate.Top := 60;
+      BtnTruncate.Width := 200;
+      BtnTruncate.Caption := 'Очистить ВСЕ данные';
+      BtnTruncate.OnClick := @BtnTruncateClick;
+      
+      BtnSweep := TButton.Create(Self);
+      BtnSweep.Parent := TabImport;
+      BtnSweep.Left := 240;
+      BtnSweep.Top := 60;
+      BtnSweep.Width := 200;
+      BtnSweep.Caption := 'Упаковать БД (Sweep)';
+      BtnSweep.OnClick := @BtnSweepClick;
+      
+      BtnStats := TButton.Create(Self);
+      BtnStats.Parent := TabImport;
+      BtnStats.Left := 460;
+      BtnStats.Top := 60;
+      BtnStats.Width := 200;
+      BtnStats.Caption := 'Показать статистику';
+      BtnStats.OnClick := @BtnStatsClick;
+      BtnStats.OnClick := @BtnStatsClick;
+    end;
+    
+    StepToCheck := 'Create Monitor';
+    FMonitor := TConnectionMonitor.Create(
+      DbConfig.Host,
+      DbConfig.Port,
+      DbConfig.DatabasePath,
+      DbConfig.UserName,
+      DbConfig.Password
+    );
+    FMonitor.OnConnectionLost := @HandleConnectionLost;
+    FMonitor.OnConnectionRestored := @HandleConnectionRestored;
+    FReadOnlyMode := True;
+    ApplyReadOnlyMode;
+    StepToCheck := 'Start Monitor';
+    FMonitor.Start;
+    
+    StepToCheck := 'Init Printers';
+    try
+      if Assigned(Printer) and Assigned(ComboPrinters) then
+      begin
+        ComboPrinters.Items.Assign(Printer.Printers);
+        if ComboPrinters.Items.Count > 0 then
+          ComboPrinters.ItemIndex := Printer.PrinterIndex;
+      end;
+    except
+      on E: Exception do
+        // Just log/ignore printer errors to allow app start
+        // ShowMessage('Printer init warning: ' + E.Message); 
+    end;
+  except
+    on E: Exception do
+      ShowMessage('Error in FormCreate (Step: ' + StepToCheck + '): ' + E.Message);
+  end;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -144,6 +216,7 @@ begin
   FreeAndNil(FAssignmentService);
   FreeAndNil(FEvaluationService);
   FreeAndNil(FReportService);
+  FreeAndNil(FMaintenanceService);
   FreeAndNil(FAudit);
   FreeAndNil(FDb);
 end;
@@ -499,6 +572,54 @@ begin
   except
     on E: Exception do
       ShowMessage('Ошибка экспорта: ' + E.Message);
+  end;
+end;
+
+procedure TMainForm.BtnTruncateClick(Sender: TObject);
+begin
+  if MessageDlg('Вы уверены, что хотите УДАЛИТЬ ВСЕ ДАННЫЕ из базы? Это действие необратимо!', mtWarning, [mbYes, mbNo], 0) = mrYes then
+  begin
+    try
+      FMaintenanceService.TruncateAllData;
+      ShowMessage('База данных очищена.');
+    except
+      on E: Exception do
+        ShowMessage('Ошибка очистки: ' + E.Message);
+    end;
+  end;
+end;
+
+procedure TMainForm.BtnSweepClick(Sender: TObject);
+var
+  Log: string;
+  FbBin: string;
+begin
+  // Assume Firebird bin is in tools/portable/Firebird or similar relative path
+  // Or relative to exe in 'firebird' folder for embedded
+  // Let's try standard portable layout: App/firebird
+  FbBin := ExtractFilePath(ParamStr(0)) + 'firebird'; 
+  if not DirectoryExists(FbBin) then
+    FbBin := ExtractFilePath(ParamStr(0)) + '..\tools\test_extract'; // Fallback for dev env
+
+  try
+    Log := FMaintenanceService.SweepDatabase(FbBin, FDbPath, 'SYSDBA', 'masterkey');
+    ShowMessage(Log);
+  except
+    on E: Exception do
+      ShowMessage('Ошибка упаковки: ' + E.Message);
+  end;
+end;
+
+procedure TMainForm.BtnStatsClick(Sender: TObject);
+var
+  Stats: string;
+begin
+  try
+    Stats := FMaintenanceService.GetStatistics;
+    ShowMessage(Stats);
+  except
+    on E: Exception do
+      ShowMessage('Ошибка: ' + E.Message);
   end;
 end;
 

@@ -11,3 +11,11 @@ src/app/config/app.ini
 src/app/config/
 
 src/app/*.lfm
+
+# build artifacts / local tooling
+out/
+tools/portable/cache/
+.vscode/
+.cursor/
+import_data.sql
+*.xlsx
