@@ -228,7 +228,7 @@ if (-not $NoDbInit) {
     Write-Host "Skip DB init"
   } else {
     $sql = @"
-create database '$DbFile' user '$User' password '$Password';
+create database '$DbFile' user '$User' password '$Password' default character set UTF8;
 input '$(Join-Path $InstallDir "docs\\db\\ddl_v1.sql")';
 commit;
 quit;
