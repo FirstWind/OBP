@@ -61,6 +61,24 @@ function Ensure-FirebirdConfSettings([string]$FirebirdDir, [int]$ListenPort) {
   Set-Content -Path $confPath -Value $conf -Encoding ASCII
 }
 
+function Stop-ObpFirebirdProcesses([string]$CurrentFirebirdDir) {
+  $procs = Get-CimInstance Win32_Process -Filter "Name='firebird.exe'"
+  foreach ($p in $procs) {
+    if ($p.ExecutablePath -and ($p.ExecutablePath -ne ($CurrentFirebirdDir + "\\firebird.exe"))) {
+      if ($p.ExecutablePath -match "\\\\OBP\\\\out\\\\" -or
+          $p.ExecutablePath -match "\\\\_install_test" -or
+          $p.ExecutablePath -match "\\\\OBP\\\\firebird\\\\firebird\\.exe$") {
+        try {
+          Write-Host "Stopping portable Firebird PID=$($p.ProcessId) ($($p.ExecutablePath))"
+          Stop-Process -Id $p.ProcessId -Force -ErrorAction Stop
+        } catch {
+          Write-Warning "Failed to stop PID=$($p.ProcessId): $($_.Exception.Message)"
+        }
+      }
+    }
+  }
+}
+
 function Initialize-Sysdba([string]$FirebirdDir, [string]$SysdbaPassword) {
   $isql = Join-Path $FirebirdDir "isql.exe"
   if (-not (Test-Path $isql)) { throw "Missing $isql" }
@@ -192,6 +210,7 @@ Set-Content -Path $appIni -Value $ini -Encoding ASCII
 Write-Section "Initialize SYSDBA (embedded)"
 $fbDir = Join-Path $InstallDir "firebird"
 Ensure-FirebirdConfSettings -FirebirdDir $fbDir -ListenPort $Port
+Stop-ObpFirebirdProcesses -CurrentFirebirdDir $fbDir
 if (Test-Path (Join-Path $InstallDir "stop_firebird.ps1")) {
   & (Join-Path $InstallDir "stop_firebird.ps1") | Out-Host
 }

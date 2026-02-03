@@ -41,6 +41,14 @@ New-Item -ItemType Directory -Force -Path (Join-Path $distDir "app\\config") | O
 Copy-Item -Force (Join-Path $repo "src\\app\\OBP.exe") (Join-Path $distDir "app\\OBP.exe")
 Copy-Item -Force (Join-Path $repo "src\\app\\config\\app.ini") (Join-Path $distDir "app\\config\\app.ini")
 
+# Normalize portable app.ini to use local data folder by default
+$portableIni = Join-Path $distDir "app\\config\\app.ini"
+if (Test-Path $portableIni) {
+  $iniText = Get-Content $portableIni -Raw
+  $iniText = $iniText -replace "(?m)^database=.*$", "database=..\\..\\data\\obp.fdb"
+  Set-Content -Path $portableIni -Value $iniText -Encoding ASCII
+}
+
 Copy-Dir (Join-Path $repo "docs") (Join-Path $distDir "docs")
 
 $cacheDir = Join-Path $PSScriptRoot "cache"
