@@ -28,6 +28,8 @@ type
     CategoryDefaultReason: string;
   end;
 
+  TSessionParticipantArray = array of TSessionParticipant;
+
 implementation
 
 end.

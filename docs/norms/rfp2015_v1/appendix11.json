@@ -1,0 +1,514 @@
+{
+  "thresholds": [
+    {
+      "sex": "M",
+      "age_group": 1,
+      "category": 3,
+      "n_required": 3,
+      "min_points_per_exercise": 30,
+      "grades": {
+        "excellent": 200,
+        "good": 180,
+        "satisfactory": 145
+      },
+      "qualification": {
+        "level_1": 240,
+        "level_2": 230,
+        "level_3": 220
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 1,
+      "category": 2,
+      "n_required": 4,
+      "min_points_per_exercise": 35,
+      "grades": {
+        "excellent": 280,
+        "good": 250,
+        "satisfactory": 210
+      },
+      "qualification": {
+        "level_1": 320,
+        "level_2": 310,
+        "level_3": 300
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 1,
+      "category": 1,
+      "n_required": 5,
+      "min_points_per_exercise": 40,
+      "grades": {
+        "excellent": 375,
+        "good": 350,
+        "satisfactory": 310
+      },
+      "qualification": {
+        "level_1": 415,
+        "level_2": 405,
+        "level_3": 395
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 2,
+      "category": 3,
+      "n_required": 3,
+      "min_points_per_exercise": 28,
+      "grades": {
+        "excellent": 180,
+        "good": 160,
+        "satisfactory": 130
+      },
+      "qualification": {
+        "level_1": 220,
+        "level_2": 210,
+        "level_3": 200
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 2,
+      "category": 2,
+      "n_required": 4,
+      "min_points_per_exercise": 33,
+      "grades": {
+        "excellent": 260,
+        "good": 230,
+        "satisfactory": 190
+      },
+      "qualification": {
+        "level_1": 300,
+        "level_2": 290,
+        "level_3": 280
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 2,
+      "category": 1,
+      "n_required": 5,
+      "min_points_per_exercise": 38,
+      "grades": {
+        "excellent": 350,
+        "good": 325,
+        "satisfactory": 290
+      },
+      "qualification": {
+        "level_1": 390,
+        "level_2": 380,
+        "level_3": 370
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 3,
+      "category": 3,
+      "n_required": 3,
+      "min_points_per_exercise": 24,
+      "grades": {
+        "excellent": 165,
+        "good": 140,
+        "satisfactory": 105
+      },
+      "qualification": {
+        "level_1": 205,
+        "level_2": 195,
+        "level_3": 185
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 3,
+      "category": 2,
+      "n_required": 4,
+      "min_points_per_exercise": 29,
+      "grades": {
+        "excellent": 240,
+        "good": 200,
+        "satisfactory": 150
+      },
+      "qualification": {
+        "level_1": 280,
+        "level_2": 270,
+        "level_3": 260
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 3,
+      "category": 1,
+      "n_required": 5,
+      "min_points_per_exercise": 34,
+      "grades": {
+        "excellent": 325,
+        "good": 275,
+        "satisfactory": 235
+      },
+      "qualification": {
+        "level_1": 365,
+        "level_2": 355,
+        "level_3": 345
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 4,
+      "category": 3,
+      "n_required": 3,
+      "min_points_per_exercise": 22,
+      "grades": {
+        "excellent": 150,
+        "good": 125,
+        "satisfactory": 90
+      },
+      "qualification": {
+        "level_1": 190,
+        "level_2": 180,
+        "level_3": 170
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 4,
+      "category": 2,
+      "n_required": 4,
+      "min_points_per_exercise": 27,
+      "grades": {
+        "excellent": 220,
+        "good": 180,
+        "satisfactory": 130
+      },
+      "qualification": {
+        "level_1": 260,
+        "level_2": 250,
+        "level_3": 240
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 4,
+      "category": 1,
+      "n_required": 5,
+      "min_points_per_exercise": 32,
+      "grades": {
+        "excellent": 300,
+        "good": 250,
+        "satisfactory": 210
+      },
+      "qualification": {
+        "level_1": 340,
+        "level_2": 330,
+        "level_3": 320
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 5,
+      "category": 3,
+      "n_required": 3,
+      "min_points_per_exercise": 20,
+      "grades": {
+        "excellent": 120,
+        "good": 100,
+        "satisfactory": 80
+      },
+      "qualification": {
+        "level_1": 160,
+        "level_2": 150,
+        "level_3": 140
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 5,
+      "category": 2,
+      "n_required": 4,
+      "min_points_per_exercise": 25,
+      "grades": {
+        "excellent": 180,
+        "good": 140,
+        "satisfactory": 110
+      },
+      "qualification": {
+        "level_1": 220,
+        "level_2": 210,
+        "level_3": 200
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 5,
+      "category": 1,
+      "n_required": 4,
+      "min_points_per_exercise": 30,
+      "grades": {
+        "excellent": 220,
+        "good": 170,
+        "satisfactory": 130
+      },
+      "qualification": {
+        "level_1": 260,
+        "level_2": 250,
+        "level_3": 240
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 6,
+      "category": 3,
+      "n_required": 3,
+      "min_points_per_exercise": 16,
+      "grades": {
+        "excellent": 95,
+        "good": 80,
+        "satisfactory": 65
+      },
+      "qualification": {
+        "level_1": 135,
+        "level_2": 125,
+        "level_3": 115
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 6,
+      "category": 2,
+      "n_required": 3,
+      "min_points_per_exercise": 21,
+      "grades": {
+        "excellent": 105,
+        "good": 90,
+        "satisfactory": 75
+      },
+      "qualification": {
+        "level_1": 145,
+        "level_2": 135,
+        "level_3": 125
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 6,
+      "category": 1,
+      "n_required": 3,
+      "min_points_per_exercise": 26,
+      "grades": {
+        "excellent": 140,
+        "good": 120,
+        "satisfactory": 100
+      },
+      "qualification": {
+        "level_1": 175,
+        "level_2": 165,
+        "level_3": 155
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 7,
+      "category": 3,
+      "n_required": 3,
+      "min_points_per_exercise": 12,
+      "grades": {
+        "excellent": 80,
+        "good": 65,
+        "satisfactory": 50
+      },
+      "qualification": {
+        "level_1": 120,
+        "level_2": 110,
+        "level_3": 100
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 7,
+      "category": 2,
+      "n_required": 3,
+      "min_points_per_exercise": 17,
+      "grades": {
+        "excellent": 90,
+        "good": 75,
+        "satisfactory": 60
+      },
+      "qualification": {
+        "level_1": 130,
+        "level_2": 120,
+        "level_3": 110
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 7,
+      "category": 1,
+      "n_required": 3,
+      "min_points_per_exercise": 22,
+      "grades": {
+        "excellent": 120,
+        "good": 100,
+        "satisfactory": 80
+      },
+      "qualification": {
+        "level_1": 160,
+        "level_2": 150,
+        "level_3": 140
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 8,
+      "category": 3,
+      "n_required": 3,
+      "min_points_per_exercise": 6,
+      "grades": {
+        "excellent": 65,
+        "good": 50,
+        "satisfactory": 35
+      },
+      "qualification": {
+        "level_1": 105,
+        "level_2": 95,
+        "level_3": 85
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 8,
+      "category": 2,
+      "n_required": 3,
+      "min_points_per_exercise": 11,
+      "grades": {
+        "excellent": 75,
+        "good": 60,
+        "satisfactory": 45
+      },
+      "qualification": {
+        "level_1": 115,
+        "level_2": 105,
+        "level_3": 95
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 8,
+      "category": 1,
+      "n_required": 3,
+      "min_points_per_exercise": 16,
+      "grades": {
+        "excellent": 100,
+        "good": 80,
+        "satisfactory": 60
+      },
+      "qualification": {
+        "level_1": 140,
+        "level_2": 130,
+        "level_3": 120
+      }
+    },
+    {
+      "sex": "F",
+      "age_group": 1,
+      "category": 3,
+      "n_required": 3,
+      "min_points_per_exercise": 28,
+      "grades": {
+        "excellent": 180,
+        "good": 150,
+        "satisfactory": 130
+      },
+      "qualification": {
+        "level_1": 220,
+        "level_2": 210,
+        "level_3": 200
+      }
+    },
+    {
+      "sex": "F",
+      "age_group": 2,
+      "category": 3,
+      "n_required": 3,
+      "min_points_per_exercise": 26,
+      "grades": {
+        "excellent": 150,
+        "good": 135,
+        "satisfactory": 115
+      },
+      "qualification": {
+        "level_1": 190,
+        "level_2": 180,
+        "level_3": 170
+      }
+    },
+    {
+      "sex": "F",
+      "age_group": 3,
+      "category": 3,
+      "n_required": 3,
+      "min_points_per_exercise": 24,
+      "grades": {
+        "excellent": 135,
+        "good": 120,
+        "satisfactory": 100
+      },
+      "qualification": {
+        "level_1": 175,
+        "level_2": 165,
+        "level_3": 155
+      }
+    },
+    {
+      "sex": "F",
+      "age_group": 4,
+      "category": 3,
+      "n_required": 3,
+      "min_points_per_exercise": 22,
+      "grades": {
+        "excellent": 120,
+        "good": 105,
+        "satisfactory": 85
+      },
+      "qualification": {
+        "level_1": 160,
+        "level_2": 150,
+        "level_3": 140
+      }
+    },
+    {
+      "sex": "F",
+      "age_group": 5,
+      "category": 3,
+      "n_required": 3,
+      "min_points_per_exercise": 20,
+      "grades": {
+        "excellent": 110,
+        "good": 90,
+        "satisfactory": 70
+      },
+      "qualification": {
+        "level_1": 150,
+        "level_2": 140,
+        "level_3": 130
+      }
+    },
+    {
+      "sex": "F",
+      "age_group": 6,
+      "category": 3,
+      "n_required": 3,
+      "min_points_per_exercise": 18,
+      "grades": {
+        "excellent": 100,
+        "good": 80,
+        "satisfactory": 65
+      },
+      "qualification": {
+        "level_1": 140,
+        "level_2": 130,
+        "level_3": 120
+      }
+    }
+  ]
+}

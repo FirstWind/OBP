@@ -15,9 +15,11 @@ type
     FTransaction: TSQLTransaction;
     procedure EnsureConnection;
     function MapParticipant(const Query: TSQLQuery): TSessionParticipant;
+    procedure AppendParticipant(var Items: TSessionParticipantArray; const Participant: TSessionParticipant);
   public
     constructor Create(const Connection: TSQLConnection; const Transaction: TSQLTransaction);
     function GetById(const Id: Int64; out Participant: TSessionParticipant): Boolean;
+    function ListBySession(const SessionId: Int64): TSessionParticipantArray;
     function Insert(const Participant: TSessionParticipant): Int64;
     procedure Update(const Participant: TSessionParticipant);
   end;
@@ -35,6 +37,16 @@ procedure TSessionParticipantRepositoryFb.EnsureConnection;
 begin
   if not FConnection.Connected then
     FConnection.Open;
+end;
+
+procedure TSessionParticipantRepositoryFb.AppendParticipant(var Items: TSessionParticipantArray;
+  const Participant: TSessionParticipant);
+var
+  L: Integer;
+begin
+  L := Length(Items);
+  SetLength(Items, L + 1);
+  Items[L] := Participant;
 end;
 
 function TSessionParticipantRepositoryFb.MapParticipant(const Query: TSQLQuery): TSessionParticipant;
@@ -80,6 +92,47 @@ begin
       begin
         Participant := MapParticipant(Query);
         Result := True;
+      end;
+      Query.Close;
+      if StartedHere then
+        FTransaction.Commit;
+    except
+      on E: Exception do
+      begin
+        if StartedHere and FTransaction.Active then
+          FTransaction.Rollback;
+        raise;
+      end;
+    end;
+  finally
+    Query.Free;
+  end;
+end;
+
+function TSessionParticipantRepositoryFb.ListBySession(const SessionId: Int64): TSessionParticipantArray;
+var
+  Query: TSQLQuery;
+  StartedHere: Boolean;
+  Item: TSessionParticipant;
+begin
+  Result := nil;
+  EnsureConnection;
+  StartedHere := not FTransaction.Active;
+  if StartedHere then
+    FTransaction.StartTransaction;
+  Query := TSQLQuery.Create(nil);
+  try
+    try
+      Query.DataBase := FConnection;
+      Query.Transaction := FTransaction;
+      Query.SQL.Text := 'select * from session_participants where session_id = :sid order by id';
+      Query.ParamByName('sid').AsLargeInt := SessionId;
+      Query.Open;
+      while not Query.EOF do
+      begin
+        Item := MapParticipant(Query);
+        AppendParticipant(Result, Item);
+        Query.Next;
       end;
       Query.Close;
       if StartedHere then

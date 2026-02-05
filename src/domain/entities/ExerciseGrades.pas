@@ -10,29 +10,34 @@ uses
 type
   EExerciseGradeError = class(Exception);
 
-  TPointsGradeRow = record
-    MinPoints: Integer;
-    Grade: string;
+  TExerciseGradeRow = record
+    Sex: Char;
+    AgeGroup: Integer;
+    Category: Integer;
+    Excellent: Integer;
+    Good: Integer;
+    Satisfactory: Integer;
   end;
 
-  TPointsGradeRows = array of TPointsGradeRow;
+  TExerciseGradeRows = array of TExerciseGradeRow;
 
-function LoadExerciseGradesFromAppendix13(const FilePath: string): TPointsGradeRows;
-function GradeByPoints(const Rows: TPointsGradeRows; const Points: Integer): string;
+function LoadExerciseGradesFromAppendix13(const FilePath: string): TExerciseGradeRows;
+function GradeByPoints(const Rows: TExerciseGradeRows; const Sex: Char; const AgeGroup: Integer;
+  const Category: Integer; const Points: Integer): string;
 
 implementation
 
 uses
   jsonparser;
 
-function LoadExerciseGradesFromAppendix13(const FilePath: string): TPointsGradeRows;
+function LoadExerciseGradesFromAppendix13(const FilePath: string): TExerciseGradeRows;
 var
   Parser: TJSONParser;
   Stream: TFileStream;
   Root: TJSONObject;
   Arr: TJSONArray;
   i: Integer;
-  Row: TPointsGradeRow;
+  Row: TExerciseGradeRow;
 begin
   if not FileExists(FilePath) then
     raise EExerciseGradeError.Create('appendix13.json not found');
@@ -48,32 +53,43 @@ begin
     Stream.Free;
   end;
 
-  Arr := Root.Arrays['points_to_grade'];
+  Arr := Root.Arrays['exercise_grades'];
   SetLength(Result, Arr.Count);
   for i := 0 to Arr.Count - 1 do
   begin
-    Row.MinPoints := Arr.Objects[i].Integers['min_points'];
-    Row.Grade := Arr.Objects[i].Strings['grade'];
+    Row.Sex := Arr.Objects[i].Strings['sex'][1];
+    Row.AgeGroup := Arr.Objects[i].Integers['age_group'];
+    Row.Category := Arr.Objects[i].Integers['category'];
+    Row.Excellent := Arr.Objects[i].Objects['grades'].Integers['excellent'];
+    Row.Good := Arr.Objects[i].Objects['grades'].Integers['good'];
+    Row.Satisfactory := Arr.Objects[i].Objects['grades'].Integers['satisfactory'];
     Result[i] := Row;
   end;
   Root.Free;
 end;
 
-function GradeByPoints(const Rows: TPointsGradeRows; const Points: Integer): string;
+function GradeByPoints(const Rows: TExerciseGradeRows; const Sex: Char; const AgeGroup: Integer;
+  const Category: Integer; const Points: Integer): string;
 var
   i: Integer;
-  BestMin: Integer;
-  BestGrade: string;
+  Row: TExerciseGradeRow;
+  Found: Boolean;
 begin
-  BestMin := -1;
-  BestGrade := 'unsatisfactory';
+  Found := False;
   for i := 0 to High(Rows) do
-    if (Points >= Rows[i].MinPoints) and (Rows[i].MinPoints >= BestMin) then
+    if (Rows[i].Sex = Sex) and (Rows[i].AgeGroup = AgeGroup) and (Rows[i].Category = Category) then
     begin
-      BestMin := Rows[i].MinPoints;
-      BestGrade := Rows[i].Grade;
+      Row := Rows[i];
+      Found := True;
+      Break;
     end;
-  Result := BestGrade;
+  if not Found then
+    raise EExerciseGradeError.Create('exercise grade row not found');
+
+  if Points >= Row.Excellent then Exit('excellent');
+  if Points >= Row.Good then Exit('good');
+  if Points >= Row.Satisfactory then Exit('satisfactory');
+  Result := 'unsatisfactory';
 end;
 
 end.

@@ -19,6 +19,9 @@ type
     Excellent: Integer;
     Good: Integer;
     Satisfactory: Integer;
+    QualLevel1: Integer;
+    QualLevel2: Integer;
+    QualLevel3: Integer;
   end;
 
   TThresholds = array of TThresholdRow;
@@ -76,6 +79,9 @@ begin
     Row.Excellent := Arr.Objects[i].Objects['grades'].Integers['excellent'];
     Row.Good := Arr.Objects[i].Objects['grades'].Integers['good'];
     Row.Satisfactory := Arr.Objects[i].Objects['grades'].Integers['satisfactory'];
+    Row.QualLevel1 := Arr.Objects[i].Objects['qualification'].Integers['level_1'];
+    Row.QualLevel2 := Arr.Objects[i].Objects['qualification'].Integers['level_2'];
+    Row.QualLevel3 := Arr.Objects[i].Objects['qualification'].Integers['level_3'];
     Result[i] := Row;
   end;
   Root.Free;

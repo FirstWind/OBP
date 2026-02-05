@@ -1,0 +1,1331 @@
+{
+  "exercises": [
+    {
+      "exercise_id": 1,
+      "name": "Комплекс вольных упражнений № 1",
+      "section": "lovkost",
+      "result_type": "score",
+      "unit": "points",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true
+        }
+      }
+    },
+    {
+      "exercise_id": 2,
+      "name": "Комплекс вольных упражнений № 2",
+      "section": "lovkost",
+      "result_type": "score",
+      "unit": "points",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true
+        }
+      }
+    },
+    {
+      "exercise_id": 3,
+      "name": "Комплекс вольных упражнений № 3",
+      "section": "lovkost",
+      "result_type": "score",
+      "unit": "points",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true
+        }
+      }
+    },
+    {
+      "exercise_id": 10,
+      "name": "Опорный прыжок через козла в длину",
+      "section": "lovkost",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": false,
+      "attempt_policy": "two_if_fall",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": false,
+          "6": false,
+          "7": false,
+          "8": false
+        },
+        "F": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": false,
+          "5": false,
+          "6": false
+        }
+      }
+    },
+    {
+      "exercise_id": 20,
+      "name": "Акробатическое упражнение",
+      "section": "lovkost",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": false,
+          "8": false
+        },
+        "F": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": false,
+          "6": false
+        }
+      }
+    },
+    {
+      "exercise_id": 23,
+      "name": "Соскок махом назад на перекладине",
+      "section": "lovkost",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": false,
+      "attempt_policy": "two_if_fall",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false,
+          "7": false,
+          "8": false
+        },
+        "F": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false
+        }
+      }
+    },
+    {
+      "exercise_id": 24,
+      "name": "Соскок махом вперед на брусьях",
+      "section": "lovkost",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": false,
+      "attempt_policy": "two_if_fall",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false,
+          "7": false,
+          "8": false
+        },
+        "F": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false
+        }
+      }
+    },
+    {
+      "exercise_id": 25,
+      "name": "Опорный прыжок через коня в длину",
+      "section": "lovkost",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": false,
+      "attempt_policy": "two_if_fall",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false,
+          "7": false,
+          "8": false
+        },
+        "F": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false
+        }
+      }
+    },
+    {
+      "exercise_id": 26,
+      "name": "Опорный прыжок, согнув ноги, через коня (козла) в ширину",
+      "section": "lovkost",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": false,
+      "attempt_policy": "two_if_fall",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false,
+          "7": false,
+          "8": false
+        },
+        "F": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false
+        }
+      }
+    },
+    {
+      "exercise_id": 4,
+      "name": "Подтягивание на перекладине",
+      "section": "sila",
+      "result_type": "reps",
+      "unit": "reps",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false
+        }
+      }
+    },
+    {
+      "exercise_id": 8,
+      "name": "Сгибание и разгибание рук в упоре на брусьях",
+      "section": "sila",
+      "result_type": "reps",
+      "unit": "reps",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": true,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false
+        }
+      }
+    },
+    {
+      "exercise_id": 11,
+      "name": "Наклоны туловища вперед",
+      "section": "sila",
+      "result_type": "reps",
+      "unit": "reps",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false,
+          "7": false,
+          "8": false
+        },
+        "F": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": true,
+          "6": true
+        }
+      }
+    },
+    {
+      "exercise_id": 12,
+      "name": "Сгибание и разгибание рук в упоре лежа",
+      "section": "sila",
+      "result_type": "reps",
+      "unit": "reps",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false,
+          "7": false,
+          "8": false
+        },
+        "F": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true
+        }
+      }
+    },
+    {
+      "exercise_id": 13,
+      "name": "Комплексное силовое упражнение",
+      "section": "sila",
+      "result_type": "reps",
+      "unit": "reps",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true
+        }
+      }
+    },
+    {
+      "exercise_id": 16,
+      "name": "Рывок гири",
+      "section": "sila",
+      "result_type": "reps",
+      "unit": "reps",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false
+        }
+      }
+    },
+    {
+      "exercise_id": 19,
+      "name": "Жим штанги лежа",
+      "section": "sila",
+      "result_type": "reps",
+      "unit": "reps",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false
+        }
+      }
+    },
+    {
+      "exercise_id": 22,
+      "name": "Приседание",
+      "section": "sila",
+      "result_type": "reps",
+      "unit": "reps",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false,
+          "7": false,
+          "8": false
+        },
+        "F": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": true,
+          "6": true
+        }
+      }
+    },
+    {
+      "exercise_id": 35,
+      "name": "Бег на 60 м",
+      "section": "bystrota",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true
+        }
+      }
+    },
+    {
+      "exercise_id": 36,
+      "name": "Бег на 100 м",
+      "section": "bystrota",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true
+        }
+      }
+    },
+    {
+      "exercise_id": 37,
+      "name": "Челночный бег 10 х 10 м",
+      "section": "bystrota",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true
+        }
+      }
+    },
+    {
+      "exercise_id": 21,
+      "name": "Прыжки со скакалкой",
+      "section": "bystrota",
+      "result_type": "reps",
+      "unit": "reps",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false,
+          "7": false,
+          "8": false
+        },
+        "F": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": true,
+          "6": true
+        }
+      }
+    },
+    {
+      "exercise_id": 39,
+      "name": "Бег на 1 км",
+      "section": "vynoslivost",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true
+        }
+      }
+    },
+    {
+      "exercise_id": 40,
+      "name": "Бег на 3 км",
+      "section": "vynoslivost",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true
+        }
+      }
+    },
+    {
+      "exercise_id": 41,
+      "name": "Бег на 5 км",
+      "section": "vynoslivost",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false
+        }
+      }
+    },
+    {
+      "exercise_id": 49,
+      "name": "Лыжная гонка на 3 км",
+      "section": "vynoslivost",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false,
+          "7": false,
+          "8": false
+        },
+        "F": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": true,
+          "5": true,
+          "6": true
+        }
+      }
+    },
+    {
+      "exercise_id": 50,
+      "name": "Лыжная гонка на 10 км",
+      "section": "vynoslivost",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true
+        }
+      }
+    },
+    {
+      "exercise_id": 42,
+      "name": "Марш-бросок на 5 км",
+      "section": "special",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true
+        }
+      }
+    },
+    {
+      "exercise_id": 43,
+      "name": "Марш-бросок на 10 км",
+      "section": "special",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": false,
+          "6": false,
+          "7": false,
+          "8": false
+        },
+        "F": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false
+        }
+      }
+    },
+    {
+      "exercise_id": 44,
+      "name": "Военизированный кросс",
+      "section": "special",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true
+        }
+      }
+    },
+    {
+      "exercise_id": 47,
+      "name": "Метание гранаты на дальность",
+      "section": "special",
+      "result_type": "distance",
+      "unit": "m",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true
+        }
+      }
+    },
+    {
+      "exercise_id": 48,
+      "name": "Метание гранаты на точность",
+      "section": "special",
+      "result_type": "score",
+      "unit": "points",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": false,
+          "6": false
+        }
+      }
+    },
+    {
+      "exercise_id": 51,
+      "name": "Марш на лыжах в составе подразделения на 5 км",
+      "section": "special",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": true,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false
+        }
+      }
+    },
+    {
+      "exercise_id": 52,
+      "name": "Марш на лыжах в составе подразделения на 10 км",
+      "section": "special",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": true,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": false,
+          "6": false,
+          "7": false,
+          "8": false
+        },
+        "F": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false
+        }
+      }
+    },
+    {
+      "exercise_id": 27,
+      "name": "Комплекс рукопашного боя без оружия",
+      "section": "rukopashnyi_boi",
+      "result_type": "score",
+      "unit": "points",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true
+        }
+      }
+    },
+    {
+      "exercise_id": 28,
+      "name": "Комплекс рукопашного боя с автоматом",
+      "section": "rukopashnyi_boi",
+      "result_type": "score",
+      "unit": "points",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true
+        }
+      }
+    },
+    {
+      "exercise_id": 29,
+      "name": "Приемы рукопашного боя",
+      "section": "rukopashnyi_boi",
+      "result_type": "score",
+      "unit": "points",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true
+        }
+      }
+    },
+    {
+      "exercise_id": 30,
+      "name": "Общее контрольное упражнение",
+      "section": "preodolenie_prepyatstvii",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": false,
+          "7": false,
+          "8": false
+        },
+        "F": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false
+        }
+      }
+    },
+    {
+      "exercise_id": 31,
+      "name": "Общее контрольное упражнение для военнослужащих женского пола",
+      "section": "preodolenie_prepyatstvii",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false,
+          "7": false,
+          "8": false
+        },
+        "F": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": false,
+          "6": false
+        }
+      }
+    },
+    {
+      "exercise_id": 32,
+      "name": "Специальное контрольное упражнение для военнослужащих экипажей кораблей и катеров",
+      "section": "preodolenie_prepyatstvii",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": false,
+          "7": false,
+          "8": false
+        },
+        "F": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false
+        }
+      }
+    },
+    {
+      "exercise_id": 33,
+      "name": "Специальное контрольное упражнение для военнослужащих, направляемых для прохождения службы в горной местности",
+      "section": "preodolenie_prepyatstvii",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": false,
+          "7": false,
+          "8": false
+        },
+        "F": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false
+        }
+      }
+    },
+    {
+      "exercise_id": 34,
+      "name": "Бег с преодолением полосы препятствий в составе подразделения",
+      "section": "preodolenie_prepyatstvii",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": true,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": false,
+          "7": false,
+          "8": false
+        },
+        "F": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false
+        }
+      }
+    },
+    {
+      "exercise_id": 53,
+      "name": "Плавание на 100 м вольным стилем",
+      "section": "plavanie",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true
+        }
+      }
+    },
+    {
+      "exercise_id": 54,
+      "name": "Плавание на 100 м способом брасс",
+      "section": "plavanie",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true
+        }
+      }
+    },
+    {
+      "exercise_id": 55,
+      "name": "Плавание в обмундировании с оружием",
+      "section": "plavanie",
+      "result_type": "time",
+      "unit": "sec",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": false,
+          "6": false,
+          "7": false,
+          "8": false
+        },
+        "F": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false
+        }
+      }
+    },
+    {
+      "exercise_id": 56,
+      "name": "Ныряние в длину",
+      "section": "plavanie",
+      "result_type": "distance",
+      "unit": "m",
+      "is_group": false,
+      "attempt_policy": "single",
+      "allowed": {
+        "M": {
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": true,
+          "8": true
+        },
+        "F": {
+          "1": false,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "age_groups": {
+      "M": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "F": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    }
+  }
+}

@@ -14,7 +14,7 @@
   "$defs": {
     "thresholdRow": {
       "type": "object",
-      "required": ["sex", "age_group", "category", "n_required", "min_points_per_exercise", "grades"],
+      "required": ["sex", "age_group", "category", "n_required", "min_points_per_exercise", "grades", "qualification"],
       "additionalProperties": false,
       "properties": {
         "sex": { "type": "string", "enum": ["M", "F"] },
@@ -30,6 +30,16 @@
             "excellent": { "type": "integer", "minimum": 0 },
             "good": { "type": "integer", "minimum": 0 },
             "satisfactory": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "qualification": {
+          "type": "object",
+          "required": ["level_1", "level_2", "level_3"],
+          "additionalProperties": false,
+          "properties": {
+            "level_1": { "type": "integer", "minimum": 0 },
+            "level_2": { "type": "integer", "minimum": 0 },
+            "level_3": { "type": "integer", "minimum": 0 }
           }
         }
       }

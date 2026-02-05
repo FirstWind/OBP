@@ -15,13 +15,17 @@ type
     function MapPerson(const Query: TSQLQuery): TPerson;
     procedure EnsureConnection;
     procedure AppendPerson(var Items: TPersonArray; const Person: TPerson);
+    procedure AppendString(var Items: TStringArray; const Value: string);
   public
     constructor Create(const Connection: TSQLConnection; const Transaction: TSQLTransaction);
     function GetById(const Id: Int64; out Person: TPerson): Boolean;
     function GetByPersonalNo(const PersonalNo: string; out Person: TPerson): Boolean;
     function List(const Offset, Limit: Integer): TPersonArray;
     function Search(const QueryText: string; const Limit: Integer): TPersonArray;
-    function SearchAdvanced(const QueryText, StatusValue, SexValue: string; const Offset, Limit: Integer): TPersonArray;
+    function SearchAdvanced(const QueryText, StatusValue, SexValue, DepartmentValue, ServiceValue, PositionValue: string; const Offset, Limit: Integer): TPersonArray;
+    function ListDistinctDepartments(const Limit: Integer): TStringArray;
+    function ListDistinctServices(const Limit: Integer): TStringArray;
+    function ListDistinctPositions(const Limit: Integer): TStringArray;
     function Insert(const Person: TPerson): Int64;
     procedure Update(const Person: TPerson);
     procedure MarkDeleted(const Id: Int64; const ActorId: string);
@@ -49,6 +53,15 @@ begin
   L := Length(Items);
   SetLength(Items, L + 1);
   Items[L] := Person;
+end;
+
+procedure TPersonRepositoryFb.AppendString(var Items: TStringArray; const Value: string);
+var
+  L: Integer;
+begin
+  L := Length(Items);
+  SetLength(Items, L + 1);
+  Items[L] := Value;
 end;
 
 function TPersonRepositoryFb.MapPerson(const Query: TSQLQuery): TPerson;
@@ -264,7 +277,7 @@ begin
   end;
 end;
 
-function TPersonRepositoryFb.SearchAdvanced(const QueryText, StatusValue, SexValue: string;
+function TPersonRepositoryFb.SearchAdvanced(const QueryText, StatusValue, SexValue, DepartmentValue, ServiceValue, PositionValue: string;
   const Offset, Limit: Integer): TPersonArray;
 var
   Query: TSQLQuery;
@@ -288,11 +301,17 @@ begin
       if Trim(QueryText) <> '' then
         SqlText := SqlText +
           ' and (upper(full_name) like :q or upper(personal_no) like :q or ' +
-          'upper(position) like :q or upper(department) like :q or upper(service) like :q)';
+          'upper("position") like :q or upper(department) like :q or upper(service) like :q)';
       if Trim(StatusValue) <> '' then
         SqlText := SqlText + ' and status = :status';
       if Trim(SexValue) <> '' then
         SqlText := SqlText + ' and sex = :sex';
+      if Trim(DepartmentValue) <> '' then
+        SqlText := SqlText + ' and department = :department';
+      if Trim(ServiceValue) <> '' then
+        SqlText := SqlText + ' and service = :service';
+      if Trim(PositionValue) <> '' then
+        SqlText := SqlText + ' and "position" = :position';
       SqlText := SqlText + ' order by full_name';
       Query.SQL.Text := SqlText;
       if Trim(QueryText) <> '' then
@@ -304,11 +323,140 @@ begin
         Query.ParamByName('status').AsString := Trim(StatusValue);
       if Trim(SexValue) <> '' then
         Query.ParamByName('sex').AsString := Trim(SexValue);
+      if Trim(DepartmentValue) <> '' then
+        Query.ParamByName('department').AsString := Trim(DepartmentValue);
+      if Trim(ServiceValue) <> '' then
+        Query.ParamByName('service').AsString := Trim(ServiceValue);
+      if Trim(PositionValue) <> '' then
+        Query.ParamByName('position').AsString := Trim(PositionValue);
       Query.Open;
       while not Query.EOF do
       begin
         Person := MapPerson(Query);
         AppendPerson(Result, Person);
+        Query.Next;
+      end;
+      Query.Close;
+      if StartedHere then
+        FTransaction.Commit;
+    except
+      on E: Exception do
+      begin
+        if StartedHere and FTransaction.Active then
+          FTransaction.Rollback;
+        raise;
+      end;
+    end;
+  finally
+    Query.Free;
+  end;
+end;
+
+function TPersonRepositoryFb.ListDistinctDepartments(const Limit: Integer): TStringArray;
+var
+  Query: TSQLQuery;
+  StartedHere: Boolean;
+  SqlText: string;
+begin
+  Result := nil;
+  EnsureConnection;
+  StartedHere := not FTransaction.Active;
+  if StartedHere then
+    FTransaction.StartTransaction;
+  Query := TSQLQuery.Create(nil);
+  try
+    try
+      Query.DataBase := FConnection;
+      Query.Transaction := FTransaction;
+      SqlText := Format('select distinct first %d department from persons where is_deleted = 0 and department is not null order by department',
+        [Limit]);
+      Query.SQL.Text := SqlText;
+      Query.Open;
+      while not Query.EOF do
+      begin
+        AppendString(Result, Query.FieldByName('department').AsString);
+        Query.Next;
+      end;
+      Query.Close;
+      if StartedHere then
+        FTransaction.Commit;
+    except
+      on E: Exception do
+      begin
+        if StartedHere and FTransaction.Active then
+          FTransaction.Rollback;
+        raise;
+      end;
+    end;
+  finally
+    Query.Free;
+  end;
+end;
+
+function TPersonRepositoryFb.ListDistinctServices(const Limit: Integer): TStringArray;
+var
+  Query: TSQLQuery;
+  StartedHere: Boolean;
+  SqlText: string;
+begin
+  Result := nil;
+  EnsureConnection;
+  StartedHere := not FTransaction.Active;
+  if StartedHere then
+    FTransaction.StartTransaction;
+  Query := TSQLQuery.Create(nil);
+  try
+    try
+      Query.DataBase := FConnection;
+      Query.Transaction := FTransaction;
+      SqlText := Format('select distinct first %d service from persons where is_deleted = 0 and service is not null order by service',
+        [Limit]);
+      Query.SQL.Text := SqlText;
+      Query.Open;
+      while not Query.EOF do
+      begin
+        AppendString(Result, Query.FieldByName('service').AsString);
+        Query.Next;
+      end;
+      Query.Close;
+      if StartedHere then
+        FTransaction.Commit;
+    except
+      on E: Exception do
+      begin
+        if StartedHere and FTransaction.Active then
+          FTransaction.Rollback;
+        raise;
+      end;
+    end;
+  finally
+    Query.Free;
+  end;
+end;
+
+function TPersonRepositoryFb.ListDistinctPositions(const Limit: Integer): TStringArray;
+var
+  Query: TSQLQuery;
+  StartedHere: Boolean;
+  SqlText: string;
+begin
+  Result := nil;
+  EnsureConnection;
+  StartedHere := not FTransaction.Active;
+  if StartedHere then
+    FTransaction.StartTransaction;
+  Query := TSQLQuery.Create(nil);
+  try
+    try
+      Query.DataBase := FConnection;
+      Query.Transaction := FTransaction;
+      SqlText := Format('select distinct first %d "position" from persons where is_deleted = 0 and "position" is not null order by "position"',
+        [Limit]);
+      Query.SQL.Text := SqlText;
+      Query.Open;
+      while not Query.EOF do
+      begin
+        AppendString(Result, Query.FieldByName('position').AsString);
         Query.Next;
       end;
       Query.Close;

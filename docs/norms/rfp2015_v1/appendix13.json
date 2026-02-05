@@ -1,0 +1,304 @@
+{
+  "exercise_grades": [
+    {
+      "sex": "M",
+      "age_group": 1,
+      "category": 3,
+      "grades": {
+        "excellent": 65,
+        "good": 60,
+        "satisfactory": 45
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 1,
+      "category": 2,
+      "grades": {
+        "excellent": 70,
+        "good": 65,
+        "satisfactory": 50
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 1,
+      "category": 1,
+      "grades": {
+        "excellent": 75,
+        "good": 70,
+        "satisfactory": 60
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 2,
+      "category": 3,
+      "grades": {
+        "excellent": 60,
+        "good": 55,
+        "satisfactory": 40
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 2,
+      "category": 2,
+      "grades": {
+        "excellent": 65,
+        "good": 60,
+        "satisfactory": 45
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 2,
+      "category": 1,
+      "grades": {
+        "excellent": 70,
+        "good": 65,
+        "satisfactory": 55
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 3,
+      "category": 3,
+      "grades": {
+        "excellent": 55,
+        "good": 45,
+        "satisfactory": 30
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 3,
+      "category": 2,
+      "grades": {
+        "excellent": 60,
+        "good": 50,
+        "satisfactory": 35
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 3,
+      "category": 1,
+      "grades": {
+        "excellent": 65,
+        "good": 55,
+        "satisfactory": 45
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 4,
+      "category": 3,
+      "grades": {
+        "excellent": 50,
+        "good": 40,
+        "satisfactory": 25
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 4,
+      "category": 2,
+      "grades": {
+        "excellent": 55,
+        "good": 45,
+        "satisfactory": 30
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 4,
+      "category": 1,
+      "grades": {
+        "excellent": 60,
+        "good": 50,
+        "satisfactory": 40
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 5,
+      "category": 3,
+      "grades": {
+        "excellent": 40,
+        "good": 30,
+        "satisfactory": 20
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 5,
+      "category": 2,
+      "grades": {
+        "excellent": 45,
+        "good": 35,
+        "satisfactory": 25
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 5,
+      "category": 1,
+      "grades": {
+        "excellent": 55,
+        "good": 40,
+        "satisfactory": 30
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 6,
+      "category": 3,
+      "grades": {
+        "excellent": 30,
+        "good": 20,
+        "satisfactory": 17
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 6,
+      "category": 2,
+      "grades": {
+        "excellent": 35,
+        "good": 25,
+        "satisfactory": 21
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 6,
+      "category": 1,
+      "grades": {
+        "excellent": 45,
+        "good": 30,
+        "satisfactory": 26
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 7,
+      "category": 3,
+      "grades": {
+        "excellent": 25,
+        "good": 17,
+        "satisfactory": 12
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 7,
+      "category": 2,
+      "grades": {
+        "excellent": 30,
+        "good": 20,
+        "satisfactory": 17
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 7,
+      "category": 1,
+      "grades": {
+        "excellent": 40,
+        "good": 25,
+        "satisfactory": 22
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 8,
+      "category": 3,
+      "grades": {
+        "excellent": 20,
+        "good": 12,
+        "satisfactory": 8
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 8,
+      "category": 2,
+      "grades": {
+        "excellent": 25,
+        "good": 17,
+        "satisfactory": 12
+      }
+    },
+    {
+      "sex": "M",
+      "age_group": 8,
+      "category": 1,
+      "grades": {
+        "excellent": 35,
+        "good": 20,
+        "satisfactory": 17
+      }
+    },
+    {
+      "sex": "F",
+      "age_group": 1,
+      "category": 3,
+      "grades": {
+        "excellent": 60,
+        "good": 50,
+        "satisfactory": 40
+      }
+    },
+    {
+      "sex": "F",
+      "age_group": 2,
+      "category": 3,
+      "grades": {
+        "excellent": 50,
+        "good": 45,
+        "satisfactory": 35
+      }
+    },
+    {
+      "sex": "F",
+      "age_group": 3,
+      "category": 3,
+      "grades": {
+        "excellent": 45,
+        "good": 40,
+        "satisfactory": 30
+      }
+    },
+    {
+      "sex": "F",
+      "age_group": 4,
+      "category": 3,
+      "grades": {
+        "excellent": 40,
+        "good": 35,
+        "satisfactory": 25
+      }
+    },
+    {
+      "sex": "F",
+      "age_group": 5,
+      "category": 3,
+      "grades": {
+        "excellent": 35,
+        "good": 30,
+        "satisfactory": 20
+      }
+    },
+    {
+      "sex": "F",
+      "age_group": 6,
+      "category": 3,
+      "grades": {
+        "excellent": 30,
+        "good": 25,
+        "satisfactory": 18
+      }
+    }
+  ]
+}

@@ -19,7 +19,7 @@ begin
   AssertTrue(Length(Pack.Thresholds) = 1, 'thresholds');
   AssertTrue(Length(Pack.Scales) = 1, 'scales');
   AssertTrue(Length(Pack.Exercises) = 1, 'exercises');
-  AssertTrue(Length(Pack.ExerciseGrades) = 2, 'exercise grades');
+  AssertTrue(Length(Pack.ExerciseGrades) = 4, 'exercise grades');
 end;
 
 procedure TestInvalid;

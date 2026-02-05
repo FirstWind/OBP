@@ -33,6 +33,9 @@ begin
   Row.Excellent := 240;
   Row.Good := 180;
   Row.Satisfactory := 120;
+  Row.QualLevel1 := 240;
+  Row.QualLevel2 := 180;
+  Row.QualLevel3 := 120;
   Thresholds[0] := Row;
 
   Policy.NoShowValid := ep_no_grade;

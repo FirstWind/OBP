@@ -21,6 +21,35 @@ function Get-ListeningPid([int]$ListenPort) {
   return $null
 }
 
+function Get-ExternalFirebirdPort([string]$BundledFirebirdDir) {
+  $procs = Get-CimInstance Win32_Process -Filter "Name='firebird.exe'"
+  if (-not $procs) { return $null }
+  $bundled = (Resolve-Path $BundledFirebirdDir).Path
+  $externalPids = @()
+  foreach ($p in $procs) {
+    if ($p.ExecutablePath -and ($p.ExecutablePath -notlike "$bundled*")) {
+      $externalPids += [int]$p.ProcessId
+    }
+  }
+  if ($externalPids.Count -eq 0) { return $null }
+
+  $ports = @()
+  $lines = netstat -ano -p tcp | Select-String -Pattern "LISTENING\\s+\\d+\\s*$"
+  foreach ($l in $lines) {
+    if ($l.Line -match ":(\\d+)\\s+.*LISTENING\\s+(\\d+)\\s*$") {
+      $port = [int]$Matches[1]
+      $pid = [int]$Matches[2]
+      if ($externalPids -contains $pid) {
+        $ports += $port
+      }
+    }
+  }
+  $ports = $ports | Select-Object -Unique
+  if ($ports -contains 3050) { return 3050 }
+  if ($ports.Count -gt 0) { return $ports[0] }
+  return $null
+}
+
 function Write-Section([string]$Text) {
   Write-Host ""
   Write-Host "== $Text"
@@ -165,7 +194,13 @@ if (Test-Path $vcRedist) {
     Write-Warning "vc_redist.x64.exe not found. Ensure Visual C++ Runtimes are installed."
 }
 
-if (Get-ListeningPid -ListenPort $Port) {
+$skipStartLocal = $false
+$externalPort = Get-ExternalFirebirdPort -BundledFirebirdDir (Join-Path $srcRoot "firebird")
+if ($externalPort) {
+  Write-Section "Detected external Firebird on port $externalPort"
+  $Port = $externalPort
+  $skipStartLocal = $true
+} elseif (Get-ListeningPid -ListenPort $Port) {
   $portWasExplicit = $PSBoundParameters.ContainsKey("Port")
   if ($portWasExplicit) {
     throw "Port $Port is already in use. Re-run with a different -Port."
@@ -195,6 +230,13 @@ Get-ChildItem -Path $srcRoot -File | Where-Object {
 }
 
 New-Item -ItemType Directory -Force -Path (Join-Path $InstallDir "data") | Out-Null
+
+Write-Section "Copy packaged data (if any)"
+$packagedDb = Join-Path $srcRoot "data\\obp.fdb"
+if (Test-Path $packagedDb) {
+  Copy-Item -Force $packagedDb $DbFile
+  Write-Host "Packaged DB copied to $DbFile"
+}
 
 Write-Section "Configure app.ini"
 $appIni = Join-Path $InstallDir "app\\config\\app.ini"
@@ -252,7 +294,11 @@ quit;
 }
 
 Write-Section "Start Firebird (as application)"
-& (Join-Path $InstallDir "start_firebird.ps1") -Port $Port -DbHost $DbHost
+if ($skipStartLocal) {
+  Write-Host "Skip portable Firebird start (external instance detected)."
+} else {
+  & (Join-Path $InstallDir "start_firebird.ps1") -Port $Port -DbHost $DbHost
+}
 
 Write-Section "Done"
 Write-Host "Run: `"$InstallDir\\run_obp.cmd`""

@@ -14,9 +14,11 @@ type
     FTransaction: TSQLTransaction;
     procedure EnsureConnection;
     function MapSession(const Query: TSQLQuery): TTestSession;
+    procedure AppendSession(var Items: TTestSessionArray; const Session: TTestSession);
   public
     constructor Create(const Connection: TSQLConnection; const Transaction: TSQLTransaction);
     function GetById(const Id: Int64; out Session: TTestSession): Boolean;
+    function ListRecent(const Limit: Integer): TTestSessionArray;
     function Insert(const Session: TTestSession): Int64;
     procedure Update(const Session: TTestSession);
     procedure UpdateStatus(const Id: Int64; const Status: TSessionStatus; const ActorId: string);
@@ -35,6 +37,15 @@ procedure TTestSessionRepositoryFb.EnsureConnection;
 begin
   if not FConnection.Connected then
     FConnection.Open;
+end;
+
+procedure TTestSessionRepositoryFb.AppendSession(var Items: TTestSessionArray; const Session: TTestSession);
+var
+  L: Integer;
+begin
+  L := Length(Items);
+  SetLength(Items, L + 1);
+  Items[L] := Session;
 end;
 
 function TTestSessionRepositoryFb.MapSession(const Query: TSQLQuery): TTestSession;
@@ -74,6 +85,47 @@ begin
       begin
         Session := MapSession(Query);
         Result := True;
+      end;
+      Query.Close;
+      if StartedHere then
+        FTransaction.Commit;
+    except
+      on E: Exception do
+      begin
+        if StartedHere and FTransaction.Active then
+          FTransaction.Rollback;
+        raise;
+      end;
+    end;
+  finally
+    Query.Free;
+  end;
+end;
+
+function TTestSessionRepositoryFb.ListRecent(const Limit: Integer): TTestSessionArray;
+var
+  Query: TSQLQuery;
+  StartedHere: Boolean;
+  Session: TTestSession;
+begin
+  Result := nil;
+  EnsureConnection;
+  StartedHere := not FTransaction.Active;
+  if StartedHere then
+    FTransaction.StartTransaction;
+  Query := TSQLQuery.Create(nil);
+  try
+    try
+      Query.DataBase := FConnection;
+      Query.Transaction := FTransaction;
+      Query.SQL.Text := 'select first ' + IntToStr(Limit) +
+        ' * from test_sessions order by session_date desc, id desc';
+      Query.Open;
+      while not Query.EOF do
+      begin
+        Session := MapSession(Query);
+        AppendSession(Result, Session);
+        Query.Next;
       end;
       Query.Close;
       if StartedHere then

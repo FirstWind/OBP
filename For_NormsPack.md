@@ -182,6 +182,11 @@ docs/norms/schemas/*.schema.json
         "excellent": 250,
         "good": 200,
         "satisfactory": 150
+      },
+      "qualification": {
+        "level_1": 300,
+        "level_2": 260,
+        "level_3": 220
       }
     }
   ]
@@ -244,11 +249,11 @@ docs/norms/schemas/*.schema.json
 
 ```json
 {
-  "points_to_grade": [
-    { "min_points": 0, "grade": "unsatisfactory" },
-    { "min_points": 30, "grade": "satisfactory" },
-    { "min_points": 60, "grade": "good" },
-    { "min_points": 90, "grade": "excellent" }
+  "exercise_grades": [
+    { "sex": "M", "age_group": 1, "category": 3, "grades": { "excellent": 65, "good": 60, "satisfactory": 45 } },
+    { "sex": "M", "age_group": 1, "category": 2, "grades": { "excellent": 70, "good": 65, "satisfactory": 50 } },
+    { "sex": "M", "age_group": 1, "category": 1, "grades": { "excellent": 75, "good": 70, "satisfactory": 60 } },
+    { "sex": "F", "age_group": 1, "category": 3, "grades": { "excellent": 60, "good": 50, "satisfactory": 40 } }
   ]
 }
 ```
@@ -297,7 +302,7 @@ docs/norms/schemas/*.schema.json
 * `intermediate/appendix12_scales.csv`
   Колонки: `exercise_id, sex, age_group, variant, result_value, points`
   (если в таблице диапазоны — сохранять как две колонки `result_from, result_to`)
-* `intermediate/appendix13_points_to_grade.csv`
+* `intermediate/appendix13_exercise_grades.csv`
   Колонки: `min_points, grade`
 
 > Важно: на этом шаге допускается ручная корректировка CSV (иногда PDF-таблицы “рвутся”).
@@ -397,7 +402,7 @@ docs/norms/schemas/*.schema.json
 - `appendix10.json` (упражнения + применимость)
 - `appendix11.json` (пороги итоговой оценки по сумме баллов + min per exercise)
 - `appendix12.json` (шкалы result→points + поправки как data)
-- `appendix13.json` (points→grade за одно упражнение)
+- `appendix13.json` (оценка за упражнение по полу/возрасту/категории)
 
 Приложения №10–13 и блок поправок являются источником данных .
 
@@ -706,17 +711,17 @@ docs/norms/schemas/*.schema.json
 
 ---
 
-### 1.5 `schemas/appendix13.schema.json` (points→grade за упражнение)
+### 1.5 `schemas/appendix13.schema.json` (оценка за упражнение по полу/возрасту/категории)
 
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://example.local/schemas/appendix13.schema.json",
   "type": "object",
-  "required": ["points_to_grade"],
+  "required": ["exercise_grades"],
   "additionalProperties": false,
   "properties": {
-    "points_to_grade": {
+    "exercise_grades": {
       "type": "array",
       "minItems": 2,
       "items": { "$ref": "#/$defs/row" }
@@ -725,11 +730,22 @@ docs/norms/schemas/*.schema.json
   "$defs": {
     "row": {
       "type": "object",
-      "required": ["min_points", "grade"],
+      "required": ["sex", "age_group", "category", "grades"],
       "additionalProperties": false,
       "properties": {
-        "min_points": { "type": "integer", "minimum": 0, "maximum": 100 },
-        "grade": { "type": "string", "enum": ["unsatisfactory", "satisfactory", "good", "excellent"] }
+        "sex": { "type": "string", "enum": ["M", "F"] },
+        "age_group": { "type": "integer", "minimum": 1, "maximum": 8 },
+        "category": { "type": "integer", "enum": [1, 2, 3] },
+        "grades": {
+          "type": "object",
+          "required": ["excellent", "good", "satisfactory"],
+          "additionalProperties": false,
+          "properties": {
+            "excellent": { "type": "integer", "minimum": 0 },
+            "good": { "type": "integer", "minimum": 0 },
+            "satisfactory": { "type": "integer", "minimum": 0 }
+          }
+        }
       }
     }
   }
@@ -793,7 +809,7 @@ docs/norms/schemas/*.schema.json
 * `effect_type` (delta_seconds|...)
 * `effect_value` (number)
 
-### 2.5 `appendix13_points_to_grade.csv`
+### 2.5 `appendix13_exercise_grades.csv`
 
 * `min_points` (int)
 * `grade` (unsatisfactory|satisfactory|good|excellent)
@@ -857,7 +873,7 @@ read CSV appendix12_adjustments (optional)
   build adjustments.rules[]
   write into appendix12.json.adjustments
 
-read CSV appendix13_points_to_grade
+read CSV appendix13_exercise_grades
   sort by min_points asc
   ensure first min_points == 0
   write appendix13.json
@@ -879,7 +895,7 @@ compute pack hash:
 * `appendix10.exercises[].exercise_id` покрывают все `appendix12.scales[].exercise_id`
 * Для каждого scale: rows отсортированы по “строгости” (для time/lower — от лучшего к худшему или наоборот, но единообразно) + нет дублей границ
 * `appendix11.thresholds` содержат строки хотя бы для тех комбинаций (sex, age_group, category) которые реально используются в продукте
-* `appendix13.points_to_grade` монотонно по min_points
+* `appendix13.exercise_grades` монотонно по min_points
 
 3. Выводит отчёт: ok / список ошибок.
 

@@ -6,7 +6,8 @@
       "category": 1,
       "n_required": 3,
       "min_points_per_exercise": 10,
-      "grades": { "excellent": 250, "good": 200, "satisfactory": 150 }
+      "grades": { "excellent": 250, "good": 200, "satisfactory": 150 },
+      "qualification": { "level_1": 250, "level_2": 200, "level_3": 150 }
     }
   ]
 }

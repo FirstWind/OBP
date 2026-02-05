@@ -13,11 +13,12 @@ end;
 
 procedure TestGrades;
 var
-  Rows: TPointsGradeRows;
+  Rows: TExerciseGradeRows;
 begin
   Rows := LoadExerciseGradesFromAppendix13('src\\tests\\fixtures\\valid\\appendix13.json');
-  AssertEqStr(GradeByPoints(Rows, 0), 'unsatisfactory', 'grade 0');
-  AssertEqStr(GradeByPoints(Rows, 60), 'satisfactory', 'grade 60');
+  AssertEqStr(GradeByPoints(Rows, 'M', 1, 3, 0), 'unsatisfactory', 'grade 0');
+  AssertEqStr(GradeByPoints(Rows, 'M', 1, 3, 60), 'good', 'grade 60');
+  AssertEqStr(GradeByPoints(Rows, 'M', 1, 2, 65), 'good', 'grade 65');
 end;
 
 begin

@@ -2,10 +2,10 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://example.local/schemas/appendix13.schema.json",
   "type": "object",
-  "required": ["points_to_grade"],
+  "required": ["exercise_grades"],
   "additionalProperties": false,
   "properties": {
-    "points_to_grade": {
+    "exercise_grades": {
       "type": "array",
       "minItems": 2,
       "items": { "$ref": "#/$defs/row" }
@@ -14,11 +14,22 @@
   "$defs": {
     "row": {
       "type": "object",
-      "required": ["min_points", "grade"],
+      "required": ["sex", "age_group", "category", "grades"],
       "additionalProperties": false,
       "properties": {
-        "min_points": { "type": "integer", "minimum": 0, "maximum": 100 },
-        "grade": { "type": "string", "enum": ["unsatisfactory", "satisfactory", "good", "excellent"] }
+        "sex": { "type": "string", "enum": ["M", "F"] },
+        "age_group": { "type": "integer", "minimum": 1, "maximum": 8 },
+        "category": { "type": "integer", "enum": [1, 2, 3] },
+        "grades": {
+          "type": "object",
+          "required": ["excellent", "good", "satisfactory"],
+          "additionalProperties": false,
+          "properties": {
+            "excellent": { "type": "integer", "minimum": 0 },
+            "good": { "type": "integer", "minimum": 0 },
+            "satisfactory": { "type": "integer", "minimum": 0 }
+          }
+        }
       }
     }
   }

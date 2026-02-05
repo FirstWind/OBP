@@ -1,6 +1,8 @@
 {
-  "points_to_grade": [
-    { "min_points": 0, "grade": "unsatisfactory" },
-    { "min_points": 50, "grade": "satisfactory" }
+  "exercise_grades": [
+    { "sex": "M", "age_group": 1, "category": 3, "grades": { "excellent": 65, "good": 60, "satisfactory": 45 } },
+    { "sex": "M", "age_group": 1, "category": 2, "grades": { "excellent": 70, "good": 65, "satisfactory": 50 } },
+    { "sex": "M", "age_group": 1, "category": 1, "grades": { "excellent": 75, "good": 70, "satisfactory": 60 } },
+    { "sex": "F", "age_group": 1, "category": 3, "grades": { "excellent": 60, "good": 50, "satisfactory": 40 } }
   ]
 }

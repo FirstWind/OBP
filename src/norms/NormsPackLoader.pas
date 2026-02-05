@@ -12,7 +12,7 @@ type
     Thresholds: TThresholds;
     Scales: TScales;
     Exercises: TExercises;
-    ExerciseGrades: TPointsGradeRows;
+    ExerciseGrades: TExerciseGradeRows;
   end;
 
 function LoadNormsPack(const PackDir: string): TLoadedNormsPack;

@@ -45,7 +45,7 @@
   <CompilerOptions>
     <Version Value="11"/>
     <SearchPaths>
-      <OtherUnitFiles Value="..\ui;..\compat_fps;..\infrastructure\config;..\infrastructure\db;..\domain\entities;..\domain\services;..\domain\policies;..\domain\value_objects;..\services;..\norms;..\audit;..\locks;..\infrastructure\crypto;..\..\third_party\fpspreadsheet"/>
+      <OtherUnitFiles Value="..\ui;..\compat_fps;..\infrastructure\config;..\infrastructure\db;..\domain\entities;..\domain\services;..\domain\policies;..\domain\value_objects;..\services;..\import;..\norms;..\audit;..\locks;..\infrastructure\crypto;..\..\third_party\fpspreadsheet"/>
       <IncludeFiles Value="$(ProjOutDir)"/>
     </SearchPaths>
     <Linking>

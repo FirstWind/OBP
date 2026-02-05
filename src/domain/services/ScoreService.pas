@@ -50,9 +50,9 @@ end;
 
 function QualificationByTotal(const Row: TThresholdRow; const Total: Integer): string;
 begin
-  if Total >= Row.Excellent then Exit('LEVEL_1');
-  if Total >= Row.Good then Exit('LEVEL_2');
-  if Total >= Row.Satisfactory then Exit('LEVEL_3');
+  if Total >= Row.QualLevel1 then Exit('LEVEL_1');
+  if Total >= Row.QualLevel2 then Exit('LEVEL_2');
+  if Total >= Row.QualLevel3 then Exit('LEVEL_3');
   Result := 'NONE';
 end;
 

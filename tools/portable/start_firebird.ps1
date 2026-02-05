@@ -43,6 +43,66 @@ function Ensure-FirebirdConfSettings([string]$FirebirdDir, [int]$ListenPort) {
   Set-Content -Path $confPath -Value $conf -Encoding ASCII
 }
 
+function Ensure-FirebirdEnv([string]$FirebirdDir) {
+  $env:PATH = "$FirebirdDir;$env:PATH"
+  $env:FIREBIRD = $FirebirdDir
+  $env:FIREBIRD_CONF = $FirebirdDir
+  $env:FIREBIRD_MSG = $FirebirdDir
+  $env:FIREBIRD_LOCK = (Join-Path $FirebirdDir "lock")
+  $env:FIREBIRD_TMP = (Join-Path $FirebirdDir "temp")
+  New-Item -ItemType Directory -Force -Path $env:FIREBIRD_LOCK | Out-Null
+  New-Item -ItemType Directory -Force -Path $env:FIREBIRD_TMP | Out-Null
+}
+
+function Initialize-SysdbaIfNeeded([string]$FirebirdDir, [string]$SysdbaPassword) {
+  $marker = Join-Path $FirebirdDir ".sysdba_initialized"
+  if (Test-Path $marker) { return }
+
+  $isql = Join-Path $FirebirdDir "isql.exe"
+  if (-not (Test-Path $isql)) { throw "Missing $isql" }
+
+  Ensure-FirebirdEnv -FirebirdDir $FirebirdDir
+
+  $employeeDb = Get-ChildItem -Recurse -Filter employee.fdb -Path $FirebirdDir -ErrorAction SilentlyContinue | Select-Object -First 1
+  $dbTarget = if ($employeeDb) { $employeeDb.FullName } else { Join-Path $FirebirdDir "security3.fdb" }
+
+  function Run-Isql([string]$TargetDb, [string]$SqlText) {
+    $tmpSql = Join-Path $env:TEMP ("obp_sysdba_" + [guid]::NewGuid().ToString("N") + ".sql")
+    Set-Content -Path $tmpSql -Value $SqlText -Encoding ASCII
+    try {
+      $oldErr = $ErrorActionPreference
+      $ErrorActionPreference = "Continue"
+      $out = & $isql -q -user sysdba -i $tmpSql $TargetDb 2>&1
+      $ErrorActionPreference = $oldErr
+      return @{ Out = $out; Exit = $LASTEXITCODE }
+    } finally {
+      Remove-Item -Force $tmpSql -ErrorAction SilentlyContinue
+    }
+  }
+
+  $createSql = @"
+create user SYSDBA password '$SysdbaPassword';
+commit;
+quit;
+"@
+  $alterSql = @"
+alter user SYSDBA password '$SysdbaPassword';
+commit;
+quit;
+"@
+
+  $res = Run-Isql -TargetDb $dbTarget -SqlText $createSql
+  if ($res.Exit -ne 0 -or (($res.Out | Out-String) -match "SQLSTATE")) {
+    $res = Run-Isql -TargetDb $dbTarget -SqlText $alterSql
+  }
+
+  if ($res.Exit -ne 0 -or (($res.Out | Out-String) -match "SQLSTATE")) {
+    throw "SYSDBA init failed. Check security database initialization."
+  }
+
+  New-Item -ItemType File -Force -Path $marker | Out-Null
+}
+
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $fbDir = Join-Path $root "firebird"
 $exe = Join-Path $fbDir "firebird.exe"
@@ -54,10 +114,17 @@ if (Test-Path $pidFile) {
   try {
     $existingPid = [int](Get-Content $pidFile -Raw)
     if ($existingPid -gt 0) {
-      $existingProcess = Get-Process -Id $existingPid -ErrorAction SilentlyContinue
+      $existingProcess = Get-CimInstance Win32_Process -Filter "ProcessId=$existingPid" -ErrorAction SilentlyContinue
       if ($existingProcess) {
-        Write-Host "Firebird already running (PID=$existingPid)"
-        exit 0
+        $expectedExe = (Resolve-Path $exe).Path
+        $procPath = $existingProcess.ExecutablePath
+        if ($procPath -and (Resolve-Path $procPath).Path -eq $expectedExe) {
+          $listenPid = Get-ListeningPid -ListenPort $Port
+          if ($listenPid -eq $existingPid) {
+            Write-Host "Firebird already running (PID=$existingPid)"
+            exit 0
+          }
+        }
       }
     }
   } catch {}
@@ -68,19 +135,10 @@ if (Get-ListeningPid -ListenPort $Port) {
   throw "Port $Port is already in use. Choose another -Port (or stop the existing Firebird on this port)."
 }
 
-# Ensure client dlls are resolvable for child processes
-$env:PATH = "$fbDir;$env:PATH"
-
-# Make ZIP-kit work without registry install
-$env:FIREBIRD = $fbDir
-$env:FIREBIRD_CONF = $fbDir
-$env:FIREBIRD_MSG = $fbDir
-$env:FIREBIRD_LOCK = (Join-Path $fbDir "lock")
-$env:FIREBIRD_TMP = (Join-Path $fbDir "temp")
-New-Item -ItemType Directory -Force -Path $env:FIREBIRD_LOCK | Out-Null
-New-Item -ItemType Directory -Force -Path $env:FIREBIRD_TMP | Out-Null
+Ensure-FirebirdEnv -FirebirdDir $fbDir
 
 Ensure-FirebirdConfSettings -FirebirdDir $fbDir -ListenPort $Port
+Initialize-SysdbaIfNeeded -FirebirdDir $fbDir -SysdbaPassword "masterkey"
 
 Write-Host "Starting Firebird as application..."
 $p = Start-Process -FilePath $exe -WorkingDirectory $fbDir -ArgumentList "-a" -PassThru -WindowStyle Hidden

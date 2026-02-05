@@ -29,6 +29,8 @@ type
     UpdatedAt: TDateTime;
   end;
 
+  TTestSessionArray = array of TTestSession;
+
 function SessionStatusToString(const Value: TSessionStatus): string;
 function SessionStatusFromString(const Value: string): TSessionStatus;
 

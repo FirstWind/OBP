@@ -9,10 +9,11 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, ExtCtrls,
   StdCtrls, Grids, Printers, LCLType,
   ConnectionMonitor, AppConfig, DbContext, AuditService, AssignmentService,
-  SessionEvaluationService, PolicyDefaults, NormsPackLoader,
+  SessionEvaluationService, PolicyDefaults, NormsPackLoader, NormsPackService,
   Exercises, SessionAssignmentEntity, AttemptResultEntity, CalculatedResultEntity,
-  PersonEntity, PersonService,
-  ReportService, DbMaintenanceService;
+  PersonEntity, PersonService, PersonImportService, TestSessionEntity, SessionParticipantEntity,
+  SessionService, SessionSetupService, ParticipantSetupService,
+  ReportService, DbMaintenanceService, Policies;
 
 type
   TMainForm = class(TForm)
@@ -25,7 +26,42 @@ type
     TabResults: TTabSheet;
     TabImport: TTabSheet;
     TabReports: TTabSheet;
-    LabelSessionsHint: TLabel;
+    PanelSessionsTop: TPanel;
+    LabelSessionPack: TLabel;
+    EditSessionPack: TEdit;
+    BtnSessionBrowsePack: TButton;
+    LabelSessionDate: TLabel;
+    EditSessionDate: TEdit;
+    LabelSessionRules: TLabel;
+    EditSessionRules: TEdit;
+    BtnSessionCreate: TButton;
+    BtnSessionsRefresh: TButton;
+    LabelSessionsCount: TLabel;
+    LabelSessionStatus: TLabel;
+    ComboSessionStatus: TComboBox;
+    BtnSessionSetStatus: TButton;
+    GridSessions: TStringGrid;
+    PanelSessionParticipants: TPanel;
+    PanelSessionParticipantTop: TPanel;
+    LabelSessionId: TLabel;
+    EditSessionId: TEdit;
+    LabelSessionPersonId: TLabel;
+    EditSessionPersonId: TEdit;
+    LabelParticipationStatus: TLabel;
+    ComboParticipationStatus: TComboBox;
+    LabelParticipationReason: TLabel;
+    ComboParticipationReason: TComboBox;
+    LabelParticipationReasonText: TLabel;
+    EditParticipationReasonText: TEdit;
+    LabelManualCategory: TLabel;
+    EditManualCategory: TEdit;
+    CheckManualCategory: TCheckBox;
+    LabelAgeMedDelta: TLabel;
+    EditAgeMedDelta: TEdit;
+    LabelAgeMedSource: TLabel;
+    ComboAgeMedSource: TComboBox;
+    BtnAddParticipant: TButton;
+    GridSessionParticipants: TStringGrid;
     PanelParticipantsTop: TPanel;
     LabelPersonsSearch: TLabel;
     EditPersonsSearch: TEdit;
@@ -38,6 +74,13 @@ type
     ComboPersonsSex: TComboBox;
     LabelPersonsStatusFilter: TLabel;
     ComboPersonsStatusFilter: TComboBox;
+    LabelPersonsDepartment: TLabel;
+    ComboPersonsDepartment: TComboBox;
+    LabelPersonsService: TLabel;
+    ComboPersonsService: TComboBox;
+    LabelPersonsPosition: TLabel;
+    ComboPersonsPosition: TComboBox;
+    BtnPersonsFiltersRefresh: TButton;
     GridPersons: TStringGrid;
     PanelPersonEdit: TPanel;
     PageControlPerson: TPageControl;
@@ -130,7 +173,12 @@ type
     LabelPersonStatus: TLabel;
     ComboPersonStatus: TComboBox;
     BtnPersonSave: TButton;
-    LabelImportHint: TLabel;
+    LabelImportFile: TLabel;
+    EditImportFile: TEdit;
+    BtnImportBrowse: TButton;
+    BtnImportRun: TButton;
+    LabelImportStatus: TLabel;
+    MemoImportLog: TMemo;
     PanelAssignTop: TPanel;
     LabelPack: TLabel;
     EditPackPath: TEdit;
@@ -167,8 +215,16 @@ type
     ComboPrinters: TComboBox;
     MemoReportPreview: TMemo;
     SaveDialogXlsx: TSaveDialog;
+    OpenDialogXlsx: TOpenDialog;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure BtnSessionBrowsePackClick(Sender: TObject);
+    procedure BtnSessionCreateClick(Sender: TObject);
+    procedure BtnSessionsRefreshClick(Sender: TObject);
+    procedure GridSessionsSelectCell(Sender: TObject; aCol, aRow: Integer;
+      var CanSelect: Boolean);
+    procedure BtnSessionSetStatusClick(Sender: TObject);
+    procedure BtnAddParticipantClick(Sender: TObject);
     procedure BtnBrowsePackClick(Sender: TObject);
     procedure BtnLoadExercisesClick(Sender: TObject);
     procedure BtnCreateAssignmentClick(Sender: TObject);
@@ -179,8 +235,12 @@ type
     procedure BtnPreviewReportClick(Sender: TObject);
     procedure BtnPrintReportClick(Sender: TObject);
     procedure BtnExportXlsxClick(Sender: TObject);
+    procedure BtnImportBrowseClick(Sender: TObject);
+    procedure BtnImportRunClick(Sender: TObject);
     procedure BtnPersonsLoadClick(Sender: TObject);
     procedure BtnPersonsSearchClick(Sender: TObject);
+    procedure BtnPersonsFiltersRefreshClick(Sender: TObject);
+    procedure ComboPersonsFilterChange(Sender: TObject);
     procedure GridPersonsSelectCell(Sender: TObject; aCol, aRow: Integer;
       var CanSelect: Boolean);
     procedure BtnPersonSaveClick(Sender: TObject);
@@ -200,6 +260,9 @@ type
     FAudit: TAuditService;
     FPersonService: TPersonService;
     FAssignmentService: TAssignmentService;
+    FSessionService: TSessionService;
+    FSessionSetupService: TSessionSetupService;
+    FParticipantSetupService: TParticipantSetupService;
     FEvaluationService: TSessionEvaluationService;
     FReportService: TReportService;
     FMaintenanceService: TDbMaintenanceService;
@@ -208,6 +271,9 @@ type
     FNormsLoaded: Boolean;
     FPersons: TPersonArray;
     FPersonsLoaded: Boolean;
+    FSessions: TTestSessionArray;
+    FSessionParticipants: TSessionParticipantArray;
+    FLoadingFilters: Boolean;
     
     // Event handlers for dynamic buttons
     procedure BtnTruncateClick(Sender: TObject);
@@ -226,6 +292,12 @@ type
     function GetSelectedPersonIndex: Integer;
     procedure SetDateEdit(const Edit: TEdit; const Value: TDateTime);
     function GetDateEdit(const Edit: TEdit): TDateTime;
+    procedure LoadPersonFilters;
+    procedure PopulateSessionsGrid;
+    procedure LoadSessions;
+    function GetSelectedSessionIndex: Integer;
+    procedure PopulateSessionParticipantsGrid;
+    procedure LoadSessionParticipants(const SessionId: Int64);
   public
     procedure SetConnectionLost;
     procedure SetConnectionRestored;
@@ -242,6 +314,7 @@ procedure TMainForm.FormCreate(Sender: TObject);
 var
   DbConfig: TDbConfig;
   StepToCheck: string;
+  ActorId: string;
 begin
   StepToCheck := 'Start';
   try
@@ -256,9 +329,15 @@ begin
     FDb := TDbContext.Create(DbConfig);
     
     StepToCheck := 'Create Services';
-    FAudit := TAuditService.Create('');
+    ActorId := Trim(GetEnvironmentVariable('USERNAME'));
+    if ActorId = '' then
+      ActorId := 'UNKNOWN';
+    FAudit := TAuditService.Create(ActorId);
     FPersonService := TPersonService.Create(FDb, FAudit);
     FAssignmentService := TAssignmentService.Create(FDb, FAudit);
+    FSessionService := TSessionService.Create(FDb, FAudit);
+    FSessionSetupService := TSessionSetupService.Create(FSessionService);
+    FParticipantSetupService := TParticipantSetupService.Create(FDb, FAudit);
     FEvaluationService := TSessionEvaluationService.Create(FDb, FAudit);
     FReportService := TReportService.Create(FDb);
     FMaintenanceService := TDbMaintenanceService.Create(FDb.Connection, FDb.Transaction);
@@ -270,7 +349,7 @@ begin
       BtnTruncate := TButton.Create(Self);
       BtnTruncate.Parent := TabImport;
       BtnTruncate.Left := 20;
-      BtnTruncate.Top := 60;
+      BtnTruncate.Top := 500;
       BtnTruncate.Width := 200;
       BtnTruncate.Caption := 'Очистить ВСЕ данные';
       BtnTruncate.OnClick := @BtnTruncateClick;
@@ -278,7 +357,7 @@ begin
       BtnSweep := TButton.Create(Self);
       BtnSweep.Parent := TabImport;
       BtnSweep.Left := 240;
-      BtnSweep.Top := 60;
+      BtnSweep.Top := 500;
       BtnSweep.Width := 200;
       BtnSweep.Caption := 'Упаковать БД (Sweep)';
       BtnSweep.OnClick := @BtnSweepClick;
@@ -286,7 +365,7 @@ begin
       BtnStats := TButton.Create(Self);
       BtnStats.Parent := TabImport;
       BtnStats.Left := 460;
-      BtnStats.Top := 60;
+      BtnStats.Top := 500;
       BtnStats.Width := 200;
       BtnStats.Caption := 'Показать статистику';
       BtnStats.OnClick := @BtnStatsClick;
@@ -343,9 +422,30 @@ begin
       ComboPersonsStatusFilter.Items.Add('inactive_other');
       ComboPersonsStatusFilter.ItemIndex := 0;
     end;
+    if Assigned(ComboPersonsDepartment) then
+    begin
+      ComboPersonsDepartment.Items.Clear;
+      ComboPersonsDepartment.Items.Add('Все');
+      ComboPersonsDepartment.ItemIndex := 0;
+    end;
+    if Assigned(ComboPersonsService) then
+    begin
+      ComboPersonsService.Items.Clear;
+      ComboPersonsService.Items.Add('Все');
+      ComboPersonsService.ItemIndex := 0;
+    end;
+    if Assigned(ComboPersonsPosition) then
+    begin
+      ComboPersonsPosition.Items.Clear;
+      ComboPersonsPosition.Items.Add('Все');
+      ComboPersonsPosition.ItemIndex := 0;
+    end;
     if Assigned(EditPersonsSearch) then
       EditPersonsSearch.OnKeyDown := @EditPersonsSearchKeyDown;
     FPersonsLoaded := False;
+    FSessions := nil;
+    FSessionParticipants := nil;
+    FLoadingFilters := False;
     
     StepToCheck := 'Init Printers';
     try
@@ -359,6 +459,49 @@ begin
       on E: Exception do
         // Just log/ignore printer errors to allow app start
         // ShowMessage('Printer init warning: ' + E.Message); 
+    end;
+
+    StepToCheck := 'Init Session UI';
+    if Assigned(ComboSessionStatus) then
+    begin
+      ComboSessionStatus.Items.Clear;
+      ComboSessionStatus.Items.Add('draft');
+      ComboSessionStatus.Items.Add('active');
+      ComboSessionStatus.Items.Add('locked');
+      ComboSessionStatus.Items.Add('archived');
+      ComboSessionStatus.ItemIndex := 0;
+    end;
+    if Assigned(ComboParticipationStatus) then
+    begin
+      ComboParticipationStatus.Items.Clear;
+      ComboParticipationStatus.Items.Add('completed');
+      ComboParticipationStatus.Items.Add('refuse');
+      ComboParticipationStatus.Items.Add('no_show_invalid');
+      ComboParticipationStatus.Items.Add('no_show_valid');
+      ComboParticipationStatus.Items.Add('medical_exempt');
+      ComboParticipationStatus.Items.Add('lfk');
+      ComboParticipationStatus.ItemIndex := 0;
+    end;
+    if Assigned(ComboParticipationReason) then
+    begin
+      ComboParticipationReason.Items.Clear;
+      ComboParticipationReason.Items.Add('');
+      ComboParticipationReason.Items.Add('BUSINESS_TRIP');
+      ComboParticipationReason.Items.Add('DUTY');
+      ComboParticipationReason.Items.Add('VACATION');
+      ComboParticipationReason.Items.Add('SICK_LEAVE');
+      ComboParticipationReason.Items.Add('MEDICAL_EXEMPT');
+      ComboParticipationReason.Items.Add('LFK');
+      ComboParticipationReason.Items.Add('NO_SHOW');
+      ComboParticipationReason.ItemIndex := 0;
+    end;
+    if Assigned(ComboAgeMedSource) then
+    begin
+      ComboAgeMedSource.Items.Clear;
+      ComboAgeMedSource.Items.Add('');
+      ComboAgeMedSource.Items.Add('manual');
+      ComboAgeMedSource.Items.Add('medical_commission');
+      ComboAgeMedSource.ItemIndex := 0;
     end;
   except
     on E: Exception do
@@ -375,6 +518,9 @@ begin
   end;
   FreeAndNil(FPersonService);
   FreeAndNil(FAssignmentService);
+  FreeAndNil(FSessionSetupService);
+  FreeAndNil(FParticipantSetupService);
+  FreeAndNil(FSessionService);
   FreeAndNil(FEvaluationService);
   FreeAndNil(FReportService);
   FreeAndNil(FMaintenanceService);
@@ -411,6 +557,165 @@ end;
 procedure TMainForm.HandleConnectionRestored(Sender: TObject);
 begin
   SetConnectionRestored;
+end;
+
+procedure TMainForm.BtnSessionBrowsePackClick(Sender: TObject);
+begin
+  if SelectDirDialog.Execute then
+    EditSessionPack.Text := SelectDirDialog.FileName;
+end;
+
+procedure TMainForm.BtnSessionCreateClick(Sender: TObject);
+var
+  PackDir: string;
+  SessionDate: TDateTime;
+  FS: TFormatSettings;
+  RulesVersion: string;
+  PackInfo: TNormsPackInfo;
+  Session: TTestSession;
+begin
+  PackDir := Trim(EditSessionPack.Text);
+  if PackDir = '' then
+  begin
+    ShowMessage('Укажите путь к Norms Pack');
+    Exit;
+  end;
+  FS := DefaultFormatSettings;
+  if not TryStrToDate(Trim(EditSessionDate.Text), SessionDate, FS) then
+  begin
+    ShowMessage('Введите дату (дд.мм.гггг)');
+    Exit;
+  end;
+  RulesVersion := Trim(EditSessionRules.Text);
+  if RulesVersion = '' then
+    RulesVersion := 'v1';
+  try
+    PackInfo := LoadNormsPackInfo(PackDir);
+    Session := FSessionSetupService.CreateSessionFromPack(
+      SessionDate,
+      PackInfo,
+      RulesVersion,
+      DefaultExcusedStatusPolicy,
+      DefaultWomenCategoryPolicy,
+      DefaultOutOfScalePolicy,
+      DefaultRoundingPolicy,
+      ap_disabled
+    );
+    ShowMessage('Сессия создана. ID=' + IntToStr(Session.Id));
+    LoadSessions;
+  except
+    on E: Exception do
+      ShowMessage('Ошибка создания сессии: ' + E.Message);
+  end;
+end;
+
+procedure TMainForm.BtnSessionsRefreshClick(Sender: TObject);
+begin
+  LoadSessions;
+end;
+
+procedure TMainForm.GridSessionsSelectCell(Sender: TObject; aCol, aRow: Integer;
+  var CanSelect: Boolean);
+var
+  Index: Integer;
+begin
+  Index := aRow - 1;
+  if (Index >= 0) and (Index <= High(FSessions)) then
+  begin
+    EditSessionId.Text := IntToStr(FSessions[Index].Id);
+    if Assigned(ComboSessionStatus) then
+      ComboSessionStatus.ItemIndex :=
+        ComboSessionStatus.Items.IndexOf(SessionStatusToString(FSessions[Index].Status));
+    LoadSessionParticipants(FSessions[Index].Id);
+  end;
+end;
+
+procedure TMainForm.BtnSessionSetStatusClick(Sender: TObject);
+var
+  SessionId: Int64;
+  NewStatus: TSessionStatus;
+begin
+  if not TryStrToInt64(Trim(EditSessionId.Text), SessionId) then
+  begin
+    ShowMessage('Выберите сессию');
+    Exit;
+  end;
+  if ComboSessionStatus.ItemIndex < 0 then
+  begin
+    ShowMessage('Выберите статус');
+    Exit;
+  end;
+  NewStatus := SessionStatusFromString(ComboSessionStatus.Items[ComboSessionStatus.ItemIndex]);
+  try
+    FSessionService.UpdateSessionStatus(SessionId, NewStatus);
+    LoadSessions;
+  except
+    on E: Exception do
+      ShowMessage('Ошибка смены статуса: ' + E.Message);
+  end;
+end;
+
+procedure TMainForm.BtnAddParticipantClick(Sender: TObject);
+var
+  SessionId, PersonId: Int64;
+  ManualCategory: Integer;
+  ManualProvided: Boolean;
+  AgeDelta: Integer;
+  AgeReason, AgeSource: string;
+  ParticipationStatus: string;
+  ReasonCode: string;
+  ReasonText: string;
+  StatusReason: string;
+  Participant: TSessionParticipant;
+begin
+  if not TryStrToInt64(Trim(EditSessionId.Text), SessionId) then
+  begin
+    ShowMessage('Выберите сессию');
+    Exit;
+  end;
+  if not TryStrToInt64(Trim(EditSessionPersonId.Text), PersonId) then
+  begin
+    ShowMessage('Введите ID персонала');
+    Exit;
+  end;
+  ParticipationStatus := '';
+  if ComboParticipationStatus.ItemIndex >= 0 then
+    ParticipationStatus := ComboParticipationStatus.Items[ComboParticipationStatus.ItemIndex];
+  ReasonCode := '';
+  if ComboParticipationReason.ItemIndex >= 0 then
+    ReasonCode := ComboParticipationReason.Items[ComboParticipationReason.ItemIndex];
+  ReasonText := Trim(EditParticipationReasonText.Text);
+  StatusReason := '';
+
+  ManualCategory := StrToIntDef(Trim(EditManualCategory.Text), 0);
+  ManualProvided := CheckManualCategory.Checked and (ManualCategory in [1,2,3]);
+  AgeDelta := StrToIntDef(Trim(EditAgeMedDelta.Text), 0);
+  AgeReason := '';
+  AgeSource := '';
+  if ComboAgeMedSource.ItemIndex >= 0 then
+    AgeSource := ComboAgeMedSource.Items[ComboAgeMedSource.ItemIndex];
+
+  try
+    Participant := FParticipantSetupService.AddParticipantFromPerson(
+      SessionId,
+      PersonId,
+      ParticipationStatus,
+      ReasonCode,
+      ReasonText,
+      StatusReason,
+      ManualCategory,
+      ManualProvided,
+      AgeDelta,
+      AgeReason,
+      AgeSource,
+      DefaultWomenCategoryPolicy
+    );
+    ShowMessage('Участник добавлен. ID=' + IntToStr(Participant.Id));
+    LoadSessionParticipants(SessionId);
+  except
+    on E: Exception do
+      ShowMessage('Ошибка добавления участника: ' + E.Message);
+  end;
 end;
 
 procedure TMainForm.BtnBrowsePackClick(Sender: TObject);
@@ -670,6 +975,102 @@ begin
     Result := 0;
 end;
 
+procedure TMainForm.PopulateSessionsGrid;
+var
+  i: Integer;
+begin
+  GridSessions.ColCount := 6;
+  GridSessions.RowCount := Length(FSessions) + 1;
+  if GridSessions.RowCount < 2 then
+    GridSessions.RowCount := 2;
+  GridSessions.Cells[0, 0] := 'ID';
+  GridSessions.Cells[1, 0] := 'Дата';
+  GridSessions.Cells[2, 0] := 'Norms ID';
+  GridSessions.Cells[3, 0] := 'Статус';
+  GridSessions.Cells[4, 0] := 'Хэш';
+  GridSessions.Cells[5, 0] := 'Rules';
+  for i := 0 to High(FSessions) do
+  begin
+    GridSessions.Cells[0, i + 1] := IntToStr(FSessions[i].Id);
+    GridSessions.Cells[1, i + 1] := FormatDateTime('yyyy-mm-dd', FSessions[i].SessionDate);
+    GridSessions.Cells[2, i + 1] := FSessions[i].NormsId;
+    GridSessions.Cells[3, i + 1] := SessionStatusToString(FSessions[i].Status);
+    GridSessions.Cells[4, i + 1] := Copy(FSessions[i].NormsPackHash, 1, 12) + '...';
+    GridSessions.Cells[5, i + 1] := FSessions[i].RulesVersion;
+  end;
+  if Assigned(LabelSessionsCount) then
+    LabelSessionsCount.Caption := 'Сессий: ' + IntToStr(Length(FSessions));
+end;
+
+procedure TMainForm.LoadSessions;
+begin
+  FSessions := FDb.Sessions.ListRecent(200);
+  PopulateSessionsGrid;
+  if Length(FSessions) > 0 then
+  begin
+    EditSessionId.Text := IntToStr(FSessions[0].Id);
+    if Assigned(ComboSessionStatus) then
+      ComboSessionStatus.ItemIndex :=
+        ComboSessionStatus.Items.IndexOf(SessionStatusToString(FSessions[0].Status));
+    LoadSessionParticipants(FSessions[0].Id);
+  end;
+end;
+
+function TMainForm.GetSelectedSessionIndex: Integer;
+var
+  RowIndex: Integer;
+begin
+  RowIndex := GridSessions.Row - 1;
+  if (RowIndex < 0) or (RowIndex > High(FSessions)) then
+    Exit(-1);
+  Result := RowIndex;
+end;
+
+procedure TMainForm.PopulateSessionParticipantsGrid;
+var
+  i: Integer;
+  Person: TPerson;
+  NameText: string;
+  PersonalNo: string;
+begin
+  GridSessionParticipants.ColCount := 8;
+  GridSessionParticipants.RowCount := Length(FSessionParticipants) + 1;
+  if GridSessionParticipants.RowCount < 2 then
+    GridSessionParticipants.RowCount := 2;
+  GridSessionParticipants.Cells[0, 0] := 'ID';
+  GridSessionParticipants.Cells[1, 0] := 'PersonID';
+  GridSessionParticipants.Cells[2, 0] := 'Личный №';
+  GridSessionParticipants.Cells[3, 0] := 'ФИО';
+  GridSessionParticipants.Cells[4, 0] := 'Статус';
+  GridSessionParticipants.Cells[5, 0] := 'Категория';
+  GridSessionParticipants.Cells[6, 0] := 'Возраст гр.';
+  GridSessionParticipants.Cells[7, 0] := 'Пол';
+  for i := 0 to High(FSessionParticipants) do
+  begin
+    NameText := '';
+    PersonalNo := '';
+    if FDb.Persons.GetById(FSessionParticipants[i].PersonId, Person) then
+    begin
+      NameText := Person.FullName;
+      PersonalNo := Person.PersonalNo;
+    end;
+    GridSessionParticipants.Cells[0, i + 1] := IntToStr(FSessionParticipants[i].Id);
+    GridSessionParticipants.Cells[1, i + 1] := IntToStr(FSessionParticipants[i].PersonId);
+    GridSessionParticipants.Cells[2, i + 1] := PersonalNo;
+    GridSessionParticipants.Cells[3, i + 1] := NameText;
+    GridSessionParticipants.Cells[4, i + 1] := FSessionParticipants[i].ParticipationStatus;
+    GridSessionParticipants.Cells[5, i + 1] := IntToStr(FSessionParticipants[i].CategoryFpAssigned);
+    GridSessionParticipants.Cells[6, i + 1] := IntToStr(FSessionParticipants[i].AgeGroupEffective);
+    GridSessionParticipants.Cells[7, i + 1] := FSessionParticipants[i].SexSnapshot;
+  end;
+end;
+
+procedure TMainForm.LoadSessionParticipants(const SessionId: Int64);
+begin
+  FSessionParticipants := FDb.Participants.ListBySession(SessionId);
+  PopulateSessionParticipantsGrid;
+end;
+
 procedure TMainForm.PopulatePersonsGrid;
 var
   i: Integer;
@@ -715,6 +1116,9 @@ var
   Limit: Integer;
   SexFilter: string;
   StatusFilter: string;
+  DepartmentFilter: string;
+  ServiceFilter: string;
+  PositionFilter: string;
 begin
   Limit := StrToIntDef(Trim(EditPersonsLimit.Text), 200);
   if Limit <= 0 then
@@ -725,11 +1129,78 @@ begin
     SexFilter := ComboPersonsSex.Items[ComboPersonsSex.ItemIndex];
   if Assigned(ComboPersonsStatusFilter) and (ComboPersonsStatusFilter.ItemIndex > 0) then
     StatusFilter := ComboPersonsStatusFilter.Items[ComboPersonsStatusFilter.ItemIndex];
-  FPersons := FDb.Persons.SearchAdvanced(Trim(QueryText), StatusFilter, SexFilter, 0, Limit);
+  DepartmentFilter := '';
+  ServiceFilter := '';
+  PositionFilter := '';
+  if Assigned(ComboPersonsDepartment) and (ComboPersonsDepartment.ItemIndex > 0) then
+    DepartmentFilter := ComboPersonsDepartment.Items[ComboPersonsDepartment.ItemIndex];
+  if Assigned(ComboPersonsService) and (ComboPersonsService.ItemIndex > 0) then
+    ServiceFilter := ComboPersonsService.Items[ComboPersonsService.ItemIndex];
+  if Assigned(ComboPersonsPosition) and (ComboPersonsPosition.ItemIndex > 0) then
+    PositionFilter := ComboPersonsPosition.Items[ComboPersonsPosition.ItemIndex];
+  FPersons := FDb.Persons.SearchAdvanced(
+    Trim(QueryText), StatusFilter, SexFilter, DepartmentFilter, ServiceFilter, PositionFilter, 0, Limit);
   PopulatePersonsGrid;
   FPersonsLoaded := True;
   if Length(FPersons) > 0 then
     SetSelectedPersonFields(FPersons[0]);
+end;
+
+procedure TMainForm.LoadPersonFilters;
+var
+  Depts, Services, Positions: TStringArray;
+  i: Integer;
+  PrevDept, PrevService, PrevPosition: string;
+begin
+  if not Assigned(ComboPersonsDepartment) then Exit;
+  FLoadingFilters := True;
+  try
+    PrevDept := ComboPersonsDepartment.Text;
+    PrevService := ComboPersonsService.Text;
+    PrevPosition := ComboPersonsPosition.Text;
+
+    Depts := FDb.Persons.ListDistinctDepartments(200);
+    Services := FDb.Persons.ListDistinctServices(200);
+    Positions := FDb.Persons.ListDistinctPositions(200);
+
+    ComboPersonsDepartment.Items.Clear;
+    ComboPersonsDepartment.Items.Add('Все');
+    for i := 0 to High(Depts) do
+      ComboPersonsDepartment.Items.Add(Depts[i]);
+
+    ComboPersonsService.Items.Clear;
+    ComboPersonsService.Items.Add('Все');
+    for i := 0 to High(Services) do
+      ComboPersonsService.Items.Add(Services[i]);
+
+    ComboPersonsPosition.Items.Clear;
+    ComboPersonsPosition.Items.Add('Все');
+    for i := 0 to High(Positions) do
+      ComboPersonsPosition.Items.Add(Positions[i]);
+
+    if PrevDept <> '' then
+      ComboPersonsDepartment.ItemIndex := ComboPersonsDepartment.Items.IndexOf(PrevDept)
+    else
+      ComboPersonsDepartment.ItemIndex := 0;
+    if ComboPersonsDepartment.ItemIndex < 0 then
+      ComboPersonsDepartment.ItemIndex := 0;
+
+    if PrevService <> '' then
+      ComboPersonsService.ItemIndex := ComboPersonsService.Items.IndexOf(PrevService)
+    else
+      ComboPersonsService.ItemIndex := 0;
+    if ComboPersonsService.ItemIndex < 0 then
+      ComboPersonsService.ItemIndex := 0;
+
+    if PrevPosition <> '' then
+      ComboPersonsPosition.ItemIndex := ComboPersonsPosition.Items.IndexOf(PrevPosition)
+    else
+      ComboPersonsPosition.ItemIndex := 0;
+    if ComboPersonsPosition.ItemIndex < 0 then
+      ComboPersonsPosition.ItemIndex := 0;
+  finally
+    FLoadingFilters := False;
+  end;
 end;
 
 procedure TMainForm.SetSelectedPersonFields(const Person: TPerson);
@@ -811,6 +1282,19 @@ begin
   LoadPersons(Trim(EditPersonsSearch.Text));
 end;
 
+procedure TMainForm.BtnPersonsFiltersRefreshClick(Sender: TObject);
+begin
+  LoadPersonFilters;
+  LoadPersons(Trim(EditPersonsSearch.Text));
+end;
+
+procedure TMainForm.ComboPersonsFilterChange(Sender: TObject);
+begin
+  if FLoadingFilters then
+    Exit;
+  LoadPersons(Trim(EditPersonsSearch.Text));
+end;
+
 procedure TMainForm.GridPersonsSelectCell(Sender: TObject; aCol, aRow: Integer;
   var CanSelect: Boolean);
 var
@@ -826,6 +1310,7 @@ begin
   if not FPersonsLoaded then
   begin
     try
+      LoadPersonFilters;
       LoadPersons('');
     except
       on E: Exception do
@@ -999,6 +1484,42 @@ begin
     on E: Exception do
       ShowMessage('Ошибка экспорта: ' + E.Message);
   end;
+end;
+
+procedure TMainForm.BtnImportBrowseClick(Sender: TObject);
+begin
+  OpenDialogXlsx.Filter := 'Excel (*.xlsx)|*.xlsx';
+  if OpenDialogXlsx.Execute then
+    EditImportFile.Text := OpenDialogXlsx.FileName;
+end;
+
+procedure TMainForm.BtnImportRunClick(Sender: TObject);
+var
+  Importer: TPersonImportService;
+  FileName: string;
+  ResultMsg: string;
+begin
+  FileName := Trim(EditImportFile.Text);
+  if FileName = '' then
+  begin
+    ShowMessage('Укажите XLSX файл');
+    Exit;
+  end;
+  if not FileExists(FileName) then
+  begin
+    ShowMessage('Файл не найден: ' + FileName);
+    Exit;
+  end;
+  Importer := TPersonImportService.Create(FPersonService);
+  try
+    ResultMsg := Importer.ImportFromXlsxToDb(FileName);
+    MemoImportLog.Lines.Text := ResultMsg;
+    LoadPersons('');
+  except
+    on E: Exception do
+      ShowMessage('Ошибка импорта: ' + E.Message);
+  end;
+  Importer.Free;
 end;
 
 procedure TMainForm.BtnTruncateClick(Sender: TObject);

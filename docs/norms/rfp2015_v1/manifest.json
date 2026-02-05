@@ -1,0 +1,20 @@
+{
+  "norms_id": "rfp2015_v1",
+  "title": "РФП-2015 (315 полный)",
+  "source": {
+    "document_name": "315 полный.pdf",
+    "document_fingerprint": "sha256:87f373ed855088b25d7b2990192d3cdc8499f3d0ee2fe9202292123f6f911b56",
+    "extraction_notes": "Built from PDF via pdftotext (raw/layout) and heuristic parsing"
+  },
+  "created_at": "2026-02-04T14:43:37Z",
+  "version": "1.0.0",
+  "compatible_app_versions": [
+    ">=1.0.0"
+  ],
+  "files": {
+    "appendix10": "appendix10.json",
+    "appendix11": "appendix11.json",
+    "appendix12": "appendix12.json",
+    "appendix13": "appendix13.json"
+  }
+}

@@ -17,7 +17,7 @@ var
   Idx: Integer;
   Rounding: TRoundingPolicy;
   Points: Integer;
-  Grades: TPointsGradeRows;
+  Grades: TExerciseGradeRows;
   Grade: string;
 begin
   Scs := LoadScalesFromAppendix12('src\\tests\\fixtures\\valid\\appendix12.json');
@@ -31,8 +31,8 @@ begin
 
   Points := CalcPointsForResult(Scs[Idx], 25, Rounding, osp_zero_points);
   Grades := LoadExerciseGradesFromAppendix13('src\\tests\\fixtures\\valid\\appendix13.json');
-  Grade := GradeByPoints(Grades, Points);
-  AssertEqStr(Grade, 'satisfactory', 'exercise grade');
+  Grade := GradeByPoints(Grades, 'M', 1, 3, Points);
+  AssertEqStr(Grade, 'excellent', 'exercise grade');
 end;
 
 begin
